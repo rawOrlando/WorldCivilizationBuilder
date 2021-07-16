@@ -7,7 +7,6 @@ class Civilization(models.Model):
     def __str__(self):
         return self.name
 
-
 class Tile(models.Model):
     colum = models.IntegerField()
     row = models.IntegerField()
@@ -57,5 +56,19 @@ class Tile(models.Model):
         # Todo add the others
         return assets
 
+
+class Settlement(models.Model):
+    name = models.CharField(max_length=100)
+    population = models.IntegerField()
+    civilization = models.ForeignKey(
+        Civilization,
+        related_name="settlements",
+        on_delete=models.PROTECT,  
+        )
+    location = models.ForeignKey(
+        Tile,
+        related_name="settlements",
+        on_delete=models.PROTECT,
+        )
 
 
