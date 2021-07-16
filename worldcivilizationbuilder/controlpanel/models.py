@@ -71,4 +71,13 @@ class Settlement(models.Model):
         on_delete=models.PROTECT,
         )
 
+    def __str__(self):
+        if self.civilization is None:
+            owner = "Unoccupied"
+        else:
+            owner = self.civilization.name
+
+        return "{name}: ({owner})".format(
+            name=self.name, owner=owner)
+
 
