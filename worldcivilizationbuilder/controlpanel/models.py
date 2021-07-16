@@ -12,7 +12,50 @@ class Tile(models.Model):
     colum = models.IntegerField()
     row = models.IntegerField()
     controler = models.ForeignKey(
-        Civilization, 
+        Civilization,
         null=True,
         related_name="tiles",
         on_delete=models.SET_NULL)
+    # Assets on the tile
+    forest = models.BooleanField(default=False)
+    tropical_forest = models.BooleanField(default=False)
+    desert = models.BooleanField(default=False)
+    hills = models.BooleanField(default=False)
+    mountain = models.BooleanField(default=False)
+    plains = models.BooleanField(default=False)
+    river = models.BooleanField(default=False)
+    lake = models.BooleanField(default=False)
+    shore = models.BooleanField(default=False)
+    snowy = models.BooleanField(default=False)
+
+    def __str__(self):
+        if self.controler is None:
+            owner = "Unoccupied"
+        else:
+            owner = self.controler.name
+
+        return "{owner}: ({row}, {colum})".format(
+            owner=owner, row=self.row, colum=self.colum)
+
+    @property
+    def owner(self):
+        if self.controler is None:
+            return "Unoccupied"
+        return self.controler.name
+
+    @property
+    def assets(self):
+        assets = []
+        if self.forest:
+            assets.add("Forest")
+        if self.tropical_forest:
+            assets.add("Tropical Forest")
+        if self.river:
+            assets.add("River")
+        if self.shore:
+            assets.add("Shore")
+        # Todo add the others
+        return assets
+
+
+
