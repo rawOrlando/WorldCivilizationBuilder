@@ -42,4 +42,7 @@ def generate_resources(civilzation):
     # Generate food/water resources from Rivers
     resource += assets["Rivers"]
 
+    # Generate through settlements
+    resource += civilzation.settlements.count() * 2
+
     return resource
