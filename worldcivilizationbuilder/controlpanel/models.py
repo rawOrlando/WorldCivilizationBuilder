@@ -60,6 +60,7 @@ class Tile(models.Model):
 class Settlement(models.Model):
     name = models.CharField(max_length=100)
     population = models.IntegerField()
+    is_capital = models.BooleanField(default=False)
     civilization = models.ForeignKey(
         Civilization,
         related_name="settlements",

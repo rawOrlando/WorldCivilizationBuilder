@@ -43,6 +43,14 @@ def generate_resources(civilzation):
     resource += assets["Rivers"]
 
     # Generate through settlements
-    resource += civilzation.settlements.count() * 2
+    for settlement in civilzation.settlements.all():
+        resource += generate_resources_from_settlement(settlement)
 
     return resource
+
+
+def generate_resources_from_settlement(settlement): 
+    # overly simple first pass
+    if settlement.is_capital:
+        return 3
+    return 2
