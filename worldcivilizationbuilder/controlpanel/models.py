@@ -47,13 +47,13 @@ class Tile(models.Model):
     def assets(self):
         assets = []
         if self.forest:
-            assets.add("Forest")
+            assets.append("Forest")
         if self.tropical_forest:
-            assets.add("Tropical Forest")
+            assets.append("Tropical Forest")
         if self.river:
-            assets.add("River")
+            assets.append("River")
         if self.shore:
-            assets.add("Shore")
+            assets.append("Shore")
         # Todo add the others
         return assets
 
