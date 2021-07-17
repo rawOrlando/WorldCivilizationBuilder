@@ -35,8 +35,15 @@ def generate_resources_from_settlement(settlement):
 
 def calculate_maintance_cost(civilzation):
     maintance = {}
+    # get all settlements locations
+    settlement_locations = civilzation.settlements.all().values_list("location", flat=True).distinct()
+
     for tile in civilzation.tiles.all():
-        # Todo calculate base on distance to civilization
-        maintance[str(tile)] = 2
+        smallest_distance = 0
+        for settlement_location in settlement_locations:
+            distance = tile.distance_between(settlement_location)
+            if smallest_distance < distance:
+                    smallest_distance = distance
+        maintance[str(tile)] = 1 + distance * 2
 
     return maintance

@@ -8,8 +8,15 @@ class Civilization(models.Model):
         return self.name
 
 class Tile(models.Model):
-    colum = models.IntegerField()
-    row = models.IntegerField()
+    # https://www.redblobgames.com/grids/hexagons/#coordinates
+    # x + y + z = 0
+    # North(+y,-z) to South(-y,+z), 
+    x = models.IntegerField()
+    # North East(+x,-z) to South West(-x,+z)
+    y = models.IntegerField()
+    # North West(+x,-y) to South East(-x,+y)
+    z = models.IntegerField()
+    
     controler = models.ForeignKey(
         Civilization,
         null=True,
@@ -33,8 +40,8 @@ class Tile(models.Model):
         else:
             owner = self.controler.name
 
-        return "{owner}: ({row}, {colum})".format(
-            owner=owner, row=self.row, colum=self.colum)
+        return "{owner}: ({x}, {y}, {z})".format(
+            owner=owner, x=self.x, y=self.y, z=self.z)
 
     @property
     def owner(self):
@@ -56,6 +63,8 @@ class Tile(models.Model):
         # Todo add the others
         return assets
 
+    def distance_between(self, other):
+        return (abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)) / 2
 
 class Settlement(models.Model):
     name = models.CharField(max_length=100)
