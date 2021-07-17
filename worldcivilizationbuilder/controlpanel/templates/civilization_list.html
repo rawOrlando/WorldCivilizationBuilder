@@ -1,9 +1,9 @@
 {% if civilization_list %}
     <ul>
     {% for civilization in civilization_list %}
-        <li><a href="/{{ civilization.id }}/">{{ civilization.name }}</a></li>
+        <li><a href="/{% url 'civilization' civilization.id %}/">{{ civilization.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No polls are available.</p>
+    <p>No civilizations are available.</p>
 {% endif %}

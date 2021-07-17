@@ -13,7 +13,7 @@ def index(request):
         'civilization_list': civilization_list,
     }
 
-    return HttpResponse(template.render(context, request))
+    return render(context, request)
 
 
 def civilization(request, civilzation_id):
