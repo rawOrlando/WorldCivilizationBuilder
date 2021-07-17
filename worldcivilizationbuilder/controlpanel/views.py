@@ -54,3 +54,13 @@ def generate_resources_from_settlement(settlement):
     if settlement.is_capital:
         return 3
     return 2
+
+
+def calculate_maintance_cost(civilzation):
+    maintance = {}
+    for tile in civilzation.tiles.all():
+        # Todo calculate base on distance to civilization
+        maintance[str(tile)] = 2
+
+    return maintance
+
