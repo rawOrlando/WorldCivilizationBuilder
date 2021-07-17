@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from django.template import loader
 
 from controlpanel.models import Civilization
-from controlpanel.costs import calculate_maintance_cost,
-                               generate_resources
+from controlpanel.costs import (calculate_maintance_cost,
+                               generate_resources)
 
 def index(request):
     civilization_list = Civilization.objects.all()

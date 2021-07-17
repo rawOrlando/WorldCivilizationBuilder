@@ -1,4 +1,5 @@
-from controlpanel.models import Civilization
+from controlpanel.models import Civilization, Tile
+import math
 
 def generate_resources(civilzation):
     assets = {
@@ -37,13 +38,12 @@ def calculate_maintance_cost(civilzation):
     maintance = {}
     # get all settlements locations
     settlement_locations = civilzation.settlements.all().values_list("location", flat=True).distinct()
-
     for tile in civilzation.tiles.all():
-        smallest_distance = 0
+        smallest_distance = math.inf
         for settlement_location in settlement_locations:
-            distance = tile.distance_between(settlement_location)
-            if smallest_distance < distance:
-                    smallest_distance = distance
-        maintance[str(tile)] = 1 + distance * 2
+            distance = tile.distance_between(Tile.objects.get(id=settlement_location))
+            if smallest_distance > distance:
+                smallest_distance = distance
+        maintance[str(tile)] = 1 + smallest_distance * 2
 
     return maintance
