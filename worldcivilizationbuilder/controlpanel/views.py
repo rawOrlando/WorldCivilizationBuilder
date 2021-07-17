@@ -4,22 +4,25 @@ from django.http import HttpResponse
 from django.template import loader
 
 from controlpanel.models import Civilization
-form controlpanel.cost import generate_resources
+from controlpanel.costs import calculate_maintance_cost,
+                               generate_resources
 
 def index(request):
     civilization_list = Civilization.objects.all()
-    template = loader.get_template('civilization_list.html')
     context = {
         'civilization_list': civilization_list,
     }
-
-    return render(context, request)
+    return render(request, 'civilization_list.html', context)
 
 
 def civilization(request, civilzation_id):
-    civ = Civilization.objects.get(id=civilzation_id)
-    return HttpResponse("{name}: {resources}".format(
-            name=civ.name, resources=str(generate_resources(civ))))
+    civilization = Civilization.objects.get(id=civilzation_id)
+    context = {
+        'civilization': civilization,
+        'resources': generate_resources(civilization),
+        'maintance': calculate_maintance_cost(civilization),
+    }
+    return render(request, 'civilization.html', context)
 
 
 
