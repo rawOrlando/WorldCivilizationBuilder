@@ -9,11 +9,17 @@
 <!-- Todo Resources -->
 <p>Resources: {{resources}}</p>
 <!-- Todo Maintance -->
-<ul>
-<li>{{ maintance }}</a></li>
+<ul class="list-group">
+  {% for maintance_project in maintance_projects %}
+  <li class="list-group-item">
+  	{{ maintance_project.name }}: 
+  	<input type="number" id="quantity" name="quantity" min="0" max="{{ maintance_project.cost }}" value="0">
+  	 / {{ maintance_project.cost }}
+  </li> 
+  {% endfor %}
 </ul>
 <!-- Todo Ongoing projects -->
 <!-- Todo Map -->
 
-<input type="submit" value="Sumbit">
+<button type="button" class="btn btn-success">Sumbit</button>
 {% endblock %}
