@@ -53,7 +53,7 @@ class Tile(models.Model):
     snowy = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('x', 'y', 'z')
+        unique_together = ('x', 'y', 'z',)
 
     def __str__(self):
         if self.controler is None:
@@ -87,6 +87,12 @@ class Tile(models.Model):
     def distance_between(self, other):
         return (abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)) / 2
 
+    @property
+    def being_claimed(self):
+        if self.projects.exists():
+            return True
+        return False
+
 class Settlement(models.Model):
     name = models.CharField(max_length=100)
     population = models.IntegerField()
@@ -111,4 +117,37 @@ class Settlement(models.Model):
         return "{name}: ({owner})".format(
             name=self.name, owner=owner)
 
+    @property
+    def being_built(self):
+        if self.projects.exists():
+            return True
+        return False
 
+class Project(models.Model):
+    # Claiming land, building settlements, and researching technology
+    name = models.CharField(max_length=100)
+    spent = models.IntegerField()
+    # Last time resources were spent on this project.
+    last_spent = models.FloatField()
+    needed = models.IntegerField(null=True)
+    civilization = models.ForeignKey(
+        Civilization,
+        related_name="projects",
+        on_delete=models.CASCAD,
+        )
+
+    # Only one of these 3 should not be null
+    building = models.ForeignKey(
+        Settlement,
+        null=True,
+        related_name="projects",
+        on_delete=models.CASCADE,
+        )
+    territory = models.ForeignKey(
+        Tile,
+        null=True,
+        related_name="projects",
+        on_delete=models.CASCADE,
+        )
+    # Todo figure out how tecnology will be done.
+    tecnology = models.CharField(max_length=100, null=True)
