@@ -6,6 +6,22 @@ class Civilization(models.Model):
     # .0 = Spring, .25 = Summer, .5 = Fall, .75 = Winter
     last_year_updated = models.FloatField()
 
+    @property
+    def year_str(self):
+        if self.last_year_updated % 1 == 0.0:
+            season = "Spring"
+        elif self.last_year_updated % 1 == 0.25:
+            season = "Summer"
+        elif self.last_year_updated % 1 == 0.5:
+            season = "Fall"
+        elif self.last_year_updated % 1 == 0.75:
+            season = "Winter"
+        else:
+            season = "Mistake"
+
+        return "{year} {season}".format(
+            year=str(int(self.last_year_updated)),season=season)
+
     def __str__(self):
         return self.name
 
