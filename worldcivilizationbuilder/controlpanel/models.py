@@ -52,6 +52,9 @@ class Tile(models.Model):
     shore = models.BooleanField(default=False)
     snowy = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('x', 'y', 'z')
+
     def __str__(self):
         if self.controler is None:
             owner = "Unoccupied"
