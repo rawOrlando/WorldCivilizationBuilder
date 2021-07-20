@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 
+{% block script%}
+<script>
+function myFunction() {
+  let total = 0;
+  var list = document.getElementById("tile_maintance");
+  var lists = document.getElementsByTagName("ul");
+  var items = document.getElementsByName("maintance");
+  for (var i = 0; i < items.length; ++i) {
+  	total +=  parseInt(items[i].value);
+  }
+  document.getElementById("total_used_resources").innerHTML = total;
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- Todo Civlization Name -->
 <h1>{{civilization.name}}</h1>
@@ -9,12 +24,15 @@
 <p>Year: {{civilization.year_str}}</p>
 <!-- Todo Resources -->
 <p>Resources: {{resources}}</p>
+<!-- Todo Total Resources -->
+<p>Total Resources: 0</p>
+<p id="total_used_resources"> 0</p>
 <!-- Todo Maintance -->
-<ul class="list-group">
+<ul class="list-group" id="tile_maintance">
   {% for maintance_project in maintance_projects %}
   <li class="list-group-item">
-  	{{ maintance_project.name }}: 
-  	<input type="number" id="quantity" name="quantity" min="0" max="{{ maintance_project.cost }}" value="0">
+  	{{ maintance_project.name }}:
+  	<input type="number" id="maintance" name="maintance" min="0" max="{{ maintance_project.cost }}" value="0">
   	 / {{ maintance_project.cost }}
   </li> 
   {% endfor %}
@@ -22,5 +40,5 @@
 <!-- Todo Ongoing projects -->
 <!-- Todo Map -->
 
-<button type="button" class="btn btn-success">Sumbit</button>
+<button type="button" class="btn btn-success" onclick="myFunction()">Sumbit</button>
 {% endblock %}

@@ -133,7 +133,7 @@ class Project(models.Model):
     civilization = models.ForeignKey(
         Civilization,
         related_name="projects",
-        on_delete=models.CASCAD,
+        on_delete=models.CASCADE,
         )
 
     # Only one of these 3 should not be null
