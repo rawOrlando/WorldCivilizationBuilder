@@ -21,7 +21,10 @@ def civilization(request, civilzation_id):
         'civilization': civilization,
         'resources': generate_resources(civilization),
         'maintance_projects': get_maintance_projects(civilization),
+        'projects': list(civilization.projects.values())
     }
     return render(request, 'civilization.html', context)
+
+
 
 

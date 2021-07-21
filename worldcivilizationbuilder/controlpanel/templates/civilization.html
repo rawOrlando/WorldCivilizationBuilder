@@ -3,13 +3,15 @@
 
 {% block script%}
 <script>
-function myFunction() {
+function sumResources() {
   let total = 0;
-  var list = document.getElementById("tile_maintance");
-  var lists = document.getElementsByTagName("ul");
-  var items = document.getElementsByName("maintance");
+  var items = document.getElementsByName("maintance_input");
   for (var i = 0; i < items.length; ++i) {
-  	total +=  parseInt(items[i].value);
+    total +=  parseInt(items[i].value);
+  }
+  var items = document.getElementsByName("project_input");
+  for (var i = 0; i < items.length; ++i) {
+    total +=  parseInt(items[i].value);
   }
   document.getElementById("total_used_resources").innerHTML = total;
 }
@@ -20,7 +22,7 @@ function myFunction() {
 <!-- Todo Civlization Name -->
 <h1>{{civilization.name}}</h1>
 <!-- Todo ^ Clickable for more details  -->
-<!-- Todo Year and Season -->
+<!-- Year and Season -->
 <p>Year: {{civilization.year_str}}</p>
 <!-- Todo Resources -->
 <p>Resources: {{resources}}</p>
@@ -29,16 +31,31 @@ function myFunction() {
 <p id="total_used_resources"> 0</p>
 <!-- Todo Maintance -->
 <ul class="list-group" id="tile_maintance">
+  Maintance
   {% for maintance_project in maintance_projects %}
   <li class="list-group-item">
-  	{{ maintance_project.name }}:
-  	<input type="number" id="maintance" name="maintance" min="0" max="{{ maintance_project.cost }}" value="0">
-  	 / {{ maintance_project.cost }}
+    {{ maintance_project.name }}:
+    <input type="number" name="maintance_input" min="0" max="{{ maintance_project.cost }}" value="0"  onchange="sumResources()">
+     / {{ maintance_project.cost }}
   </li> 
   {% endfor %}
 </ul>
-<!-- Todo Ongoing projects -->
+<!-- Ongoing projects -->
+<ul class="list-group" id="project_maintance">
+  Projects
+  {% for project in projects %}
+  <li class="list-group-item">
+    {{ project.name }}:
+    <input type="number" name="project_input" min="0" {% if project.needed != None %} max="{{ project.needed }}"
+    {% endif %} value="0"  onchange="sumResources()">
+    {% if project.needed != None %}
+    / {{ project.needed }}
+    {% endif %}
+  </li> 
+  {% endfor %}
+</ul>
+<!-- Todo Create a new projects -->
 <!-- Todo Map -->
 
-<button type="button" class="btn btn-success" onclick="myFunction()">Sumbit</button>
+<button type="button" class="btn btn-success" onclick="sumResources()">Sumbit</button>
 {% endblock %}

@@ -129,7 +129,7 @@ class Project(models.Model):
     spent = models.IntegerField()
     # Last time resources were spent on this project.
     last_spent = models.FloatField()
-    needed = models.IntegerField(null=True)
+    needed = models.IntegerField(null=True, blank=True, default=None)
     civilization = models.ForeignKey(
         Civilization,
         related_name="projects",
@@ -140,14 +140,26 @@ class Project(models.Model):
     building = models.ForeignKey(
         Settlement,
         null=True,
+        default=None,
+        blank=True,
         related_name="projects",
         on_delete=models.CASCADE,
         )
     territory = models.ForeignKey(
         Tile,
         null=True,
+        default=None,
+        blank=True,
         related_name="projects",
         on_delete=models.CASCADE,
         )
     # Todo figure out how tecnology will be done.
-    tecnology = models.CharField(max_length=100, null=True)
+    tecnology = models.CharField(
+        max_length=100,
+        null=True,
+        default=None,
+        blank=True,)
+
+    def __str__(self):
+        return "{name}: ({owner})".format(
+            name=self.name, owner=self.civilization.name)
