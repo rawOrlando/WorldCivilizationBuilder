@@ -1,4 +1,8 @@
 from controlpanel.models import Civilization, Tile
+from disasters.disaster import (is_in_a_draught,
+                                during_forest_fire,
+                                is_in_fighting,
+                                durring_epidemic)
 import math
 
 def generate_resources(civilization):
@@ -19,16 +23,25 @@ def generate_resources(civilization):
     for settlement in civilization.settlements.all():
         resources += generate_resources_from_settlement(settlement)
 
+    if is_in_fighting(civilization):
+        resources = resources/2
+
     return resources
 
 def generate_resources_from_tile(civilization, tile):
     assets = tile.assets
+    # Can't gain resources from a forest during a forest fire.
+    if (during_forest_fire(civilization) and 
+        ("Tropical Forest" in assets or
+         "Forest" in assets)):
+        return 0
     resources = 0
     # Generate food reasouces from Tropical Forests
     if "Tropical Forest" in assets:
         resources += 1
     # Generate food/water resources from Rivers
-    if "River" in assets:
+    if ("River" in assets and
+        not is_in_a_draught(civilization)):
         resources += 1
     # Generat food resources from hunting
     if (civilization.can_hunt() and 
@@ -38,6 +51,8 @@ def generate_resources_from_tile(civilization, tile):
     return resources
 
 def generate_resources_from_settlement(settlement): 
+    if durring_epidemic(settlement.civilization):
+        return 0
     # overly simple first pass
     if settlement.is_capital:
         return 3
@@ -67,5 +82,10 @@ def calculate_maintance_cost_for_tile(tile, settlement_locations):
         distance = tile.distance_between(Tile.objects.get(id=settlement_location))
         if smallest_distance > distance:
             smallest_distance = distance
-    return 1 + smallest_distance * 2
+    cost = 1 + smallest_distance * 2
+    if (during_forest_fire(tile.controler) and
+        (tile.forest or tile.tropical_forest)):
+        cost += 1
+        # Todo factor in distance to water...?
+    return cost 
 

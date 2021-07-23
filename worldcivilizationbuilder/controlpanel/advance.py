@@ -1,4 +1,5 @@
 from controlpanel.costs import calculate_maintance_cost_for_tile
+from disasters.disaster import next_disaster
 import random
 
 def spend_resources(civilization, year, resources_spent):
@@ -59,13 +60,24 @@ def spend_resources_on_project(project, spent, civilization, year):
 
 def advance_civilization_a_season(civilization):
 
-    civilization.last_year_updated = 0.25 + civilization.last_year_updated
+    new_time = 0.25 + civilization.last_year_updated
+    civilization.last_year_updated = new_time
 
     # if new year 
-    if civilization.last_year_updated % 1 == 0.0:
+    if new_time % 1 == 0.0:
+        # Generate next disaster
+        next_disaster(new_time, civilization)
+
+        # Check to see if disaster repeated an escalates
+        # Todo
+
+        # Remove finished disasters
+        for disaster in civilization.current_disasters.all():
+            if disaster.end_time <= new_time:
+                disaster.delete()
+
         # Lose tiles if un maintaned
         for tile in civilization.tiles.all():
-            print(tile.maintaned)
             if not tile.maintaned:
                 tile.controler = None
             tile.reset_maintance()
@@ -74,14 +86,12 @@ def advance_civilization_a_season(civilization):
 
         repopulate(civilization)
 
-        # Disaster check
-        # Todo
-
     civilization.save()
 
 def repopulate(civilization):
     for settlement in civilization.settlements.all():
-        for i in range(-1, settlement.population % 10):
+        for i in range(0, (settlement.population // 10) + 1):
             chance = random.randrange(1,100)
             if chance <= 10:
                 settlement.population += 1
+                settlement.save()

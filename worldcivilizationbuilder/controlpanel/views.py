@@ -43,12 +43,6 @@ def convert_input_to_resources_spent(data):
             if "tile_" in shorten_key:
                 tile_id = shorten_key.replace("tile_", "")
                 tile = Tile.objects.get(id=tile_id)
-                temp = {
-                    "type": "maintance_tile",
-                    "spent_on": tile,
-                    "spent": int(data[key]),
-                } 
-                print(temp)
                 resources_spent.append({
                     "type": "maintance_tile",
                     "spent_on": tile,
