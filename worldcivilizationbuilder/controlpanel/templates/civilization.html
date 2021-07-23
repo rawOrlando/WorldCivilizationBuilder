@@ -2,6 +2,7 @@
 {% load bootstrap3 %}
 
 {% block script%}
+<!-- Need to come back and make this work now that names are chagned  -->
 <script>
 function sumResources() {
   let total = 0;
@@ -29,33 +30,37 @@ function sumResources() {
 <!-- Todo Total Resources -->
 <p>Total Resources: 0</p>
 <p id="total_used_resources"> 0</p>
-<!-- Todo Maintance -->
-<ul class="list-group" id="tile_maintance">
-  Maintance
-  {% for maintance_project in maintance_projects %}
-  <li class="list-group-item">
-    {{ maintance_project.name }}:
-    <input type="number" name="maintance_input" min="0" max="{{ maintance_project.cost }}" value="0"  onchange="sumResources()">
-     / {{ maintance_project.cost }}
-  </li> 
-  {% endfor %}
-</ul>
-<!-- Ongoing projects -->
-<ul class="list-group" id="project_maintance">
-  Projects
-  {% for project in projects %}
-  <li class="list-group-item">
-    {{ project.name }}:
-    <input type="number" name="project_input" min="0" {% if project.needed != None %} max="{{ project.needed }}"
-    {% endif %} value="0"  onchange="sumResources()">
-    {% if project.needed != None %}
-    / {{ project.needed }}
-    {% endif %}
-  </li> 
-  {% endfor %}
-</ul>
-<!-- Todo Create a new projects -->
-<!-- Todo Map -->
+<form method="post">
+  {% csrf_token %}
+  <!-- Todo Maintance -->
+  <ul class="list-group" id="tile_maintance">
+    Maintance
+    {% for maintance_project in maintance_projects %}
+    <li class="list-group-item">
+      {{ maintance_project.name }}:
+      <input type="number" name="maintance_{{ maintance_project.id }}" min="0" max="{{ maintance_project.cost }}" value="0"  onchange="sumResources()">
+       / {{ maintance_project.cost }}
+    </li> 
+    {% endfor %}
+  </ul>
+  <!-- Ongoing projects -->
+  <ul class="list-group" id="project_maintance">
+    Projects
+    {% for project in projects %}
+    <li class="list-group-item">
+      {{ project.name }}:
+      <input type="number" name="project_{{ project.id }}" min="0" {% if project.needed != None %} max="{{ project.needed }}"
+      {% endif %} value="0"  onchange="sumResources()">
+      {% if project.needed != None %}
+      / {{ project.needed }}
+      {% endif %}
+    </li> 
+    {% endfor %}
+  </ul>
+  <!-- Todo Create a new projects button -->
+  <!-- Todo Map -->
+  <button type="submit" class="btn btn-success" >Sumbit</button>
+</form>
 
-<button type="button" class="btn btn-success" onclick="sumResources()">Sumbit</button>
+
 {% endblock %}

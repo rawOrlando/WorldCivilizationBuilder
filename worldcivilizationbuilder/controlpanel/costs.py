@@ -40,12 +40,14 @@ def get_maintance_projects(civilzation):
     # get all settlements locations
     settlement_locations = civilzation.settlements.all().values_list("location", flat=True).distinct()
     for tile in civilzation.tiles.all():
-        cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
-        maintance = {
-            "name": str(tile),
-            "cost": int(cost)
-        }
-        maintance_projects.append(maintance)
+        if not tile.maintaned:
+            cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
+            maintance = {
+                "name": str(tile),
+                "id": "tile_" + str(tile.id),
+                "cost": int(cost)
+            }
+            maintance_projects.append(maintance)
 
     return maintance_projects
 

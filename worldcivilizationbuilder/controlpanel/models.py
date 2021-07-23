@@ -38,6 +38,7 @@ class Tile(models.Model):
     controler = models.ForeignKey(
         Civilization,
         null=True,
+        blank=True,
         related_name="tiles",
         on_delete=models.SET_NULL)
     # Assets on the tile
@@ -51,6 +52,15 @@ class Tile(models.Model):
     lake = models.BooleanField(default=False)
     shore = models.BooleanField(default=False)
     snowy = models.BooleanField(default=False)
+
+    # The stuf fpr maintance
+    # Maybe should be moved.
+    # .0 = Spring, .25 = Summer, .5 = Fall, .75 = Winter
+    last_year_updated = models.FloatField(default=0)
+    # Spent so far this year 
+    maintance_spent_already = models.IntegerField(default=0)
+    maintaned = models.BooleanField(default=False)
+
 
     class Meta:
         unique_together = ('x', 'y', 'z',)
@@ -83,6 +93,10 @@ class Tile(models.Model):
             assets.append("Shore")
         # Todo add the others
         return assets
+
+    def reset_maintance(self):
+        self.maintaned = False
+        self.maintance_spent_already = 0
 
     def distance_between(self, other):
         return (abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)) / 2
@@ -159,6 +173,15 @@ class Project(models.Model):
         null=True,
         default=None,
         blank=True,)
+
+    def is_research(self):
+        return self.tecnology and self.territory is None and self.building is None
+
+    def is_exploration(self):
+        return self.territory and not self.tecnology and self.building is None
+
+    def is_building_settlement(self):
+        return self.building and self.territory is None and not self.tecnology
 
     def __str__(self):
         return "{name}: ({owner})".format(
