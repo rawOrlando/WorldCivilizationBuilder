@@ -186,3 +186,22 @@ class Project(models.Model):
     def __str__(self):
         return "{name}: ({owner})".format(
             name=self.name, owner=self.civilization.name)
+
+class Technology(models.Model):
+    name = models.CharField(max_length=100)
+    tec_type = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class CivTec(models.Model):
+    civilization = models.ForeignKey(Civilization, on_delete=models.CASCADE)
+    technology = models.ForeignKey(Technology, on_delete=models.CASCADE)
+    # The stuff for maintance
+    # Maybe should be moved.
+    # .0 = Spring, .25 = Summer, .5 = Fall, .75 = Winter
+    last_year_maintance_applied = models.FloatField(default=0)
+    # Spent so far this year 
+    maintance_spent_already = models.IntegerField(default=0)
+    needed_maintance = models.IntegerField()
+    maintaned = models.BooleanField(default=False)
