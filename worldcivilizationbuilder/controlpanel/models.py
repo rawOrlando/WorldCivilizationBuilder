@@ -5,6 +5,7 @@ class Civilization(models.Model):
     name = models.CharField(max_length=100)
     # .0 = Spring, .25 = Summer, .5 = Fall, .75 = Winter
     last_year_updated = models.FloatField()
+    technologies = models.ManyToManyField("Technology", through="CivTec")
 
     @property
     def year_str(self):
@@ -24,6 +25,13 @@ class Civilization(models.Model):
 
     def __str__(self):
         return self.name
+
+    def can_hunt(self):
+        # todo is there a better way to do this?
+        for technology in self.technologies.all():
+            if technology.name == "Slings":
+                return True
+        return False
 
 class Tile(models.Model):
     # https://www.redblobgames.com/grids/hexagons/#coordinates
@@ -195,8 +203,8 @@ class Technology(models.Model):
         return self.name
 
 class CivTec(models.Model):
-    civilization = models.ForeignKey(Civilization, on_delete=models.CASCADE)
-    technology = models.ForeignKey(Technology, on_delete=models.CASCADE)
+    civilization = models.ForeignKey("Civilization", on_delete=models.CASCADE)
+    technology = models.ForeignKey("Technology", on_delete=models.CASCADE)
     # The stuff for maintance
     # Maybe should be moved.
     # .0 = Spring, .25 = Summer, .5 = Fall, .75 = Winter

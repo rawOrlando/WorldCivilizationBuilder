@@ -1,7 +1,7 @@
 from controlpanel.models import Civilization, Tile
 import math
 
-def generate_resources(civilzation):
+def generate_resources(civilization):
     assets = {
         "Forests": 0,
         "Tropical Forests": 0,
@@ -9,23 +9,33 @@ def generate_resources(civilzation):
         "Shores": 0,
         "Plains": 0,
     }
-    resource = 0
-    for tile in civilzation.tiles.all():
+    resources = 0
+    for tile in civilization.tiles.all():
         for asset in tile.assets:
             assets[asset+"s"] += 1
-
-    # Generate food reasouces from Tropical Forests
-    resource += assets["Tropical Forests"]
-
-    # Generate food/water resources from Rivers
-    resource += assets["Rivers"]
+        resources += generate_resources_from_tile(civilization, tile)
 
     # Generate through settlements
-    for settlement in civilzation.settlements.all():
-        resource += generate_resources_from_settlement(settlement)
+    for settlement in civilization.settlements.all():
+        resources += generate_resources_from_settlement(settlement)
 
-    return resource
+    return resources
 
+def generate_resources_from_tile(civilization, tile):
+    assets = tile.assets
+    resources = 0
+    # Generate food reasouces from Tropical Forests
+    if "Tropical Forest" in assets:
+        resources += 1
+    # Generate food/water resources from Rivers
+    if "River" in assets:
+        resources += 1
+    # Generat food resources from hunting
+    if (civilization.can_hunt() and 
+        ("Forest" in assets or "Plain" in assets) and
+        not tile.settlements.count() > 0):
+        resources += 1
+    return resources
 
 def generate_resources_from_settlement(settlement): 
     # overly simple first pass
