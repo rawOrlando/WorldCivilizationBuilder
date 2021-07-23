@@ -198,6 +198,7 @@ class Project(models.Model):
 class Technology(models.Model):
     name = models.CharField(max_length=100)
     tec_type = models.CharField(max_length=100)
+    description = models.CharField(max_length=300)
 
     def __str__(self):
         return self.name

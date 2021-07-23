@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<!-- Todo Civlization Name -->
+<h1>{{civilization.name}}</h1>
+<!-- Todo ^ Clickable for more details  -->
+<!-- Year and Season -->
+<p>Year: {{civilization.year_str}}</p>
+
+<!-- Todo Map focused on the civilization. -->
+
+<!-- Todo All tiles ??? -->
+
+<!-- Todo all technologies -->
+<p>Technology</p>
+{% for technology in technologies %}
+<p>{{technology.name}}</p>
+<p>{{technology.description}}</p>
+{% endfor %}
+{% endblock %}

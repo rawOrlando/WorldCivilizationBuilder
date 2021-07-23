@@ -35,6 +35,16 @@ def civilization(request, civilzation_id):
     return render(request, 'civilization.html', context)
 
 
+def civilization_details(request, civilzation_id):
+    civilization = Civilization.objects.get(id=civilzation_id)
+    context = {
+        'civilization': civilization,
+        'technologies': list(civilization.technologies.all()),
+        'projects': list(civilization.projects.values())
+    }
+    return render(request, 'civilization_details.html', context)
+
+
 def convert_input_to_resources_spent(data):
     resources_spent = []
     for key in data:
