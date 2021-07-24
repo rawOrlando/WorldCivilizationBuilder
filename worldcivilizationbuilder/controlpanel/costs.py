@@ -5,76 +5,106 @@ from disasters.disaster import (is_in_a_draught,
                                 durring_epidemic)
 import math
 
+class ResourceBundle:
+    """ 
+    Assume
+    food 
+    water
+    and wildcard exist
+    """
+    def __init__(self): 
+        self.food = 0.0
+        self.water = 0.0
+        self.wildcard = 0.0
+
+    def simmple_total(self):
+        return int(self.food) + int(self.water) + int(self.wildcard)
+
 def generate_resources(civilization):
     assets = {
         "Forests": 0,
         "Tropical Forests": 0,
         "Rivers": 0,
         "Shores": 0,
-        "Plains": 0,
+        "Plainss": 0, # todo figure (ss) out?
     }
     resources = 0
+    resource_bundle = ResourceBundle()
     for tile in civilization.tiles.all():
         for asset in tile.assets:
             assets[asset+"s"] += 1
-        resources += generate_resources_from_tile(civilization, tile)
-
+        # I dont like how is changedbehind the scene
+        resource_bundle = generate_resources_from_tile(civilization, tile, resource_bundle)
     # Generate through settlements
     for settlement in civilization.settlements.all():
-        resources += generate_resources_from_settlement(settlement)
-
+        resource_bundle = generate_resources_from_settlement(settlement, resource_bundle)
+    resources = resource_bundle.simmple_total()
     if is_in_fighting(civilization):
         resources = resources/2
 
     return resources
 
-def generate_resources_from_tile(civilization, tile):
+def generate_resources_from_tile(civilization, tile, resource_bundle):
     assets = tile.assets
     # Can't gain resources from a forest during a forest fire.
     if (during_forest_fire(civilization) and 
         ("Tropical Forest" in assets or
          "Forest" in assets)):
-        return 0
-    resources = 0
+        return resource_bundle
     # Generate food reasouces from Tropical Forests
     if "Tropical Forest" in assets:
-        resources += 1
+        resource_bundle.food += 1
     # Generate food/water resources from Rivers
     if ("River" in assets and
         not is_in_a_draught(civilization)):
-        resources += 1
+        resource_bundle.water += 1
+        if civilization.can_spear_fish():
+            resource_bundle.food += 0.25
     # Generat food resources from hunting
     if (civilization.can_hunt() and 
-        ("Forest" in assets or "Plain" in assets) and
+        ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
-        resources += 1
-    return resources
+        resource_bundle.food += 1
+        if civilization.technologies.filter(name="Domesticated Dogs").exists():
+            print("Dogs")
+            resource_bundle.food += 0.25
+    return resource_bundle
 
-def generate_resources_from_settlement(settlement): 
+def generate_resources_from_settlement(settlement, resource_bundle): 
     if durring_epidemic(settlement.civilization):
-        return 0
+        return resource_bundle
 
     if settlement.being_built:
-        return 0
+        return resource_bundle
 
     # overly simple first pass
     if settlement.is_capital:
-        return 3
-    return 2
+        resource_bundle.wildcard += 3
+    else:
+        resource_bundle.wildcard += 2
+    return resource_bundle
 
-def get_maintance_projects(civilzation):
+def get_maintance_projects(civilization):
     maintance_projects = []
 
     # get all maintance projects for maintianing land
     # get all settlements locations
-    settlement_locations = civilzation.settlements.all().values_list("location", flat=True).distinct()
-    for tile in civilzation.tiles.all():
+    settlement_locations = civilization.get_all_settlement_locations()
+    for tile in civilization.tiles.all():
         if not tile.maintaned:
             cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
             maintance = {
                 "name": str(tile),
                 "id": "tile_" + str(tile.id),
                 "cost": int(cost)
+            }
+            maintance_projects.append(maintance)
+    for civtec in civilization.civtec.all():
+        if not civtec.maintaned and civtec.needed_maintance > 0:
+            maintance = {
+                "name": civtec.technology.name,
+                "id": "tech_" + str(civtec.id),
+                "cost": int(civtec.needed_maintance)
             }
             maintance_projects.append(maintance)
 
@@ -92,7 +122,7 @@ def calculate_maintance_cost_for_tile(tile, settlement_locations=None, simple=Fa
 
 def calculate_distance_to_closest_settlement(tile, settlement_locations=None):
     if settlement_locations is None:
-        settlement_locations = tile.controler.settlements.all().values_list("location", flat=True).distinct()
+        settlement_locations = tile.controler.get_all_settlement_locations()
     smallest_distance = math.inf
     for settlement_location in settlement_locations:
         distance = tile.distance_between(Tile.objects.get(id=settlement_location))

@@ -7,7 +7,8 @@ from django.shortcuts import redirect
 from controlpanel.models import (Civilization,
                                  Tile, 
                                  Settlement, 
-                                 Project)
+                                 Project,
+                                 CivTec)
 from controlpanel.advance import (spend_resources,
                                   advance_civilization_a_season)
 from controlpanel.costs import (get_maintance_projects,
@@ -137,9 +138,10 @@ def new_exploration(request, civilization_id):
 
     neighbors = neighbors.difference(list(civilization.tiles.all()))
     tiles_info = []
-    settlement_locations = civilization.settlements.all().values_list("location", flat=True).distinct()
     for tile_neighbor in neighbors:
-        cost = calculate_maintance_cost_for_tile(tile_neighbor, settlement_locations, simple=True)
+        cost = calculate_maintance_cost_for_tile(tile_neighbor,
+            settlement_locations=civilization.get_all_settlement_locations(),
+            simple=True)
         tiles_info.append(
             {
                 "id": tile_neighbor.id,
@@ -167,6 +169,14 @@ def convert_input_to_resources_spent(data):
                 resources_spent.append({
                     "type": "maintance_tile",
                     "spent_on": tile,
+                    "spent": int(data[key]),
+                })
+            if "tech_" in shorten_key:
+                tech_id = shorten_key.replace("tech_", "")
+                tech = CivTec.objects.get(id=tech_id)
+                resources_spent.append({
+                    "type": "maintance_tech",
+                    "spent_on": tech,
                     "spent": int(data[key]),
                 })
         if "project_" in key:

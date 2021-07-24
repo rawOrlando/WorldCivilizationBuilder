@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.db.models import Q
 
 class Civilization(models.Model):
     name = models.CharField(max_length=100)
@@ -27,11 +27,19 @@ class Civilization(models.Model):
         return self.name
 
     def can_hunt(self):
-        # todo is there a better way to do this?
-        for technology in self.technologies.all():
-            if technology.name == "Slings":
-                return True
-        return False
+        return self.civtec.filter(
+            Q(technology__name="Bone Tools", active=True) | 
+            Q(technology__name="Slings"), active=True).exists()
+
+    def can_spear_fish(self):
+        return self.has_technology("Bone Tools")
+
+    def has_technology(self, technology_name):
+        return self.civtec.filter(technology__name=technology_name, active=True).exists()
+
+    def get_all_settlement_locations(self):
+        return self.settlements.filter(projects=None).values_list("location", flat=True).distinct()
+
 
 # Todo move this stuff to a app called map
 class Tile(models.Model):
@@ -202,6 +210,11 @@ class Project(models.Model):
         default=None,
         blank=True,)
 
+    def delete(self, *args, **kwargs):
+        if self.needed and not self.spent >= self.needed:
+            self.building.delete()
+        super(Project, self).delete(*args, **kwargs)
+
     def is_research(self):
         return self.tecnology and self.territory is None and self.building is None
 
@@ -224,7 +237,11 @@ class Technology(models.Model):
         return self.name
 
 class CivTec(models.Model):
-    civilization = models.ForeignKey("Civilization", on_delete=models.CASCADE)
+    # todo rename this...?
+    civilization = models.ForeignKey(
+        "Civilization",
+        on_delete=models.CASCADE,
+        related_name="civtec")
     technology = models.ForeignKey("Technology", on_delete=models.CASCADE)
     # The stuff for maintance
     # Maybe should be moved.
@@ -234,3 +251,8 @@ class CivTec(models.Model):
     maintance_spent_already = models.IntegerField(default=0)
     needed_maintance = models.IntegerField()
     maintaned = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+
+    def reset_maintance(self):
+        self.maintaned = False
+        self.maintance_spent_already = 0
