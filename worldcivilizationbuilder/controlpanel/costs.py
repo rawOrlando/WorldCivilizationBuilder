@@ -80,7 +80,17 @@ def get_maintance_projects(civilzation):
 
     return maintance_projects
 
-def calculate_maintance_cost_for_tile(tile, settlement_locations=None):
+def calculate_maintance_cost_for_tile(tile, settlement_locations=None, simple=False):
+    smallest_distance = calculate_distance_to_closest_settlement(tile, settlement_locations)
+    cost = 1 + smallest_distance * 2
+    if not simple:
+        if (during_forest_fire(tile.controler) and
+            (tile.forest or tile.tropical_forest)):
+            cost += 1
+            # Todo factor in distance to water...?
+    return cost 
+
+def calculate_distance_to_closest_settlement(tile, settlement_locations=None):
     if settlement_locations is None:
         settlement_locations = tile.controler.settlements.all().values_list("location", flat=True).distinct()
     smallest_distance = math.inf
@@ -88,10 +98,5 @@ def calculate_maintance_cost_for_tile(tile, settlement_locations=None):
         distance = tile.distance_between(Tile.objects.get(id=settlement_location))
         if smallest_distance > distance:
             smallest_distance = distance
-    cost = 1 + smallest_distance * 2
-    if (during_forest_fire(tile.controler) and
-        (tile.forest or tile.tropical_forest)):
-        cost += 1
-        # Todo factor in distance to water...?
-    return cost 
+    return smallest_distance
 

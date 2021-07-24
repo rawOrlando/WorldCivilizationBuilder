@@ -1,5 +1,5 @@
 {% block content %}
-<p>Create a new Settlement:</p><br>
+<p>Create a new Exploration:</p><br>
 <form method="post">
   {% csrf_token %}
   <p>Please select a tile:</p>
@@ -10,7 +10,7 @@
   &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
   {{ tile.assets }}<br>
   &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-  Cost: {{ tile.cost }}
+  Estimated Upkeep: {{ tile.cost }}
   <br><br>
   {% endfor %}
   <button type="submit" class="btn btn-success" >Sumbit</button>

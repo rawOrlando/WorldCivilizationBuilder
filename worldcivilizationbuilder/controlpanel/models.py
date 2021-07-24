@@ -33,6 +33,7 @@ class Civilization(models.Model):
                 return True
         return False
 
+# Todo move this stuff to a app called map
 class Tile(models.Model):
     # https://www.redblobgames.com/grids/hexagons/#coordinates
     # x + y + z = 0
@@ -99,6 +100,8 @@ class Tile(models.Model):
             assets.append("River")
         if self.shore:
             assets.append("Shore")
+        if self.plains:
+            assets.append("Plains")
         # Todo add the others
         return assets
 
@@ -108,6 +111,23 @@ class Tile(models.Model):
 
     def distance_between(self, other):
         return (abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)) / 2
+
+    def get_neighbors(self):
+        # Todo: Make this more django
+        # North +y, -z
+        north, created = Tile.objects.get_or_create(x=self.x,y=self.y+1,z=self.z-1)
+        # North East +x, -z
+        north_east, created = Tile.objects.get_or_create(x=self.x+1,y=self.y,z=self.z-1)
+        # South East +x, -y
+        south_east, created = Tile.objects.get_or_create(x=self.x+1,y=self.y-1,z=self.z)
+        # South -y, +z
+        south, created = Tile.objects.get_or_create(x=self.x,y=self.y-1,z=self.z+1)
+        # North West -x, +z
+        north_west, created = Tile.objects.get_or_create(x=self.x-1,y=self.y,z=self.z+1)
+        # South West -x, +y
+        south_west, created = Tile.objects.get_or_create(x=self.x-1,y=self.y+1,z=self.z)
+
+        return {north, north_east, north_west, south, south_east, south_west}
 
     @property
     def being_claimed(self):

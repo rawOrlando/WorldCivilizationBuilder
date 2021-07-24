@@ -12,7 +12,8 @@ from controlpanel.advance import (spend_resources,
                                   advance_civilization_a_season)
 from controlpanel.costs import (get_maintance_projects,
                                generate_resources,
-                               calculate_maintance_cost_for_tile)
+                               calculate_maintance_cost_for_tile,
+                               calculate_distance_to_closest_settlement)
 
 def index(request):
     civilization_list = Civilization.objects.all()
@@ -114,29 +115,36 @@ def new_settlement(request, civilization_id):
 
 def new_exploration(request, civilization_id):
     civilization = Civilization.objects.get(id=civilization_id)
+    settlement_locations = civilization.settlements.all().values_list("location", flat=True).distinct()
     if request.POST:
         tile_id = request.POST["tile"].replace("tile_", "")
         tile = Tile.objects.get(id=tile_id)
+        # calulate distance to closest settlment
+        distance = calculate_distance_to_closest_settlement(tile, settlement_locations)
         Project.objects.create(
             name="Exploring " + str(tile),
             territory=tile,
-            needed=calculate_maintance_cost_for_tile(tile),
+            needed=20*distance,
             last_spent=civilization.last_year_updated,
             civilization=civilization)
         
         return redirect('/'+str(civilization_id)+'/')
     # Get all the tiles around your tiles.
     # Todo not right Tile
-    tiles = civilization.tiles.filter(settlements=None)
+    neighbors = set()
+    for controled_tile in civilization.tiles.all():
+        neighbors = neighbors.union(set(controled_tile.get_neighbors()))
+
+    neighbors = neighbors.difference(list(civilization.tiles.all()))
     tiles_info = []
     settlement_locations = civilization.settlements.all().values_list("location", flat=True).distinct()
-    for tile in tiles:
-        cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
+    for tile_neighbor in neighbors:
+        cost = calculate_maintance_cost_for_tile(tile_neighbor, settlement_locations, simple=True)
         tiles_info.append(
             {
-                "id": tile.id,
-                "name": str(tile),
-                "assets": tile.assets,
+                "id": tile_neighbor.id,
+                "name": str(tile_neighbor),
+                "assets": tile_neighbor.assets,
                 "cost": cost,
             }
         )
@@ -145,7 +153,7 @@ def new_exploration(request, civilization_id):
         'civilization': civilization, 
         'tiles': tiles_info,
     }
-    return render(request, 'new_settlement.html', context)
+    return render(request, 'new_exploration.html', context)
 
 
 def convert_input_to_resources_spent(data):
