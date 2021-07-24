@@ -11,7 +11,13 @@ def spend_resources(civilization, year, resources_spent):
                 resource_spent["spent"],
                 civilization,
                 year)
-        if resource_spent["type"] == "project":
+        elif resource_spent["type"] == "maintance_tech":
+            spend_resources_on_tech_maintance(
+                resource_spent["spent_on"],
+                resource_spent["spent"],
+                civilization,
+                year)
+        elif resource_spent["type"] == "project":
             spend_resources_on_project(
                 resource_spent["spent_on"],
                 resource_spent["spent"],
@@ -22,12 +28,18 @@ def spend_resources_on_tile_maintance(tile, spent, civilization, year):
     tile.last_year_updated = year
     tile.maintance_spent_already += spent
     # Todo find a way this does not need to be calculated again
-    needed = calculate_maintance_cost_for_tile(
-        tile, 
-        civilization.get_all_settlement_locations())
+    needed = calculate_maintance_cost_for_tile(tile)
     if needed <= tile.maintance_spent_already:
         tile.maintaned = True
     tile.save()
+
+def spend_resources_on_tech_maintance(tech, spent, civilization, year):
+    tech.last_year_maintance_applied = year
+    tech.maintance_spent_already += spent
+    if tech.needed_maintance <= tech.maintance_spent_already:
+        tech.maintaned = True
+        tech.active = True
+    tech.save()
 
 def spend_resources_on_project(project, spent, civilization, year):
     # Todo split this up
@@ -83,7 +95,14 @@ def advance_civilization_a_season(civilization):
                 tile.controler = None
             tile.reset_maintance()
 
-            tile.save()
+            tile.save() 
+
+        for tech in civilization.civtec.all():
+            if not tech.maintaned:
+                tech.active = False
+            tech.reset_maintance()
+
+            tech.save()
 
         repopulate(civilization)
 

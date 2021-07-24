@@ -72,10 +72,10 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
 
 def generate_resources_from_settlement(settlement, resource_bundle): 
     if durring_epidemic(settlement.civilization):
-        return 0
+        return resource_bundle
 
     if settlement.being_built:
-        return 0
+        return resource_bundle
 
     # overly simple first pass
     if settlement.is_capital:
@@ -97,6 +97,14 @@ def get_maintance_projects(civilization):
                 "name": str(tile),
                 "id": "tile_" + str(tile.id),
                 "cost": int(cost)
+            }
+            maintance_projects.append(maintance)
+    for civtec in civilization.civtec.all():
+        if not civtec.maintaned and civtec.needed_maintance > 0:
+            maintance = {
+                "name": civtec.technology.name,
+                "id": "tech_" + str(civtec.id),
+                "cost": int(civtec.needed_maintance)
             }
             maintance_projects.append(maintance)
 
