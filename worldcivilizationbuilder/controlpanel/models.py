@@ -29,7 +29,15 @@ class Civilization(models.Model):
     def can_hunt(self):
         # todo is there a better way to do this?
         for technology in self.technologies.all():
-            if technology.name == "Slings":
+            if (technology.name == "Slings" or
+                technology.name == "Bone Tools"):
+                return True
+        return False
+
+    def can_spear_fish(self):
+        # todo is there a better way to do this?
+        for technology in self.technologies.all():
+            if technology.name == "Bone Tools":
                 return True
         return False
 

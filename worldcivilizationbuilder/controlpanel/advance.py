@@ -99,7 +99,6 @@ def decay_unattended_projects(civilization):
             if project.spent <= 0:
                 project.delete()
             else:
-                print(decay**2)
                 project.spent -= decay**2
                 project.save()
 
