@@ -43,6 +43,7 @@ function sumResources() {
       {{ maintance_project.name }}:
       <input type="number" name="maintance_{{ maintance_project.id }}" min="0" max="{{ maintance_project.cost }}" value="0"  onchange="sumResources()">
        / {{ maintance_project.cost }}
+       &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
     </li> 
     {% endfor %}
   </ul>
@@ -57,7 +58,9 @@ function sumResources() {
       {% if project.needed != None %}
       / {{ project.needed }}
       {% endif %}
-    
+      &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+      Already spent:
+      {{ project.spent }}
     {% endfor %}
     <li class="list-group-item">
     <button onclick="location.href='{% url 'new_project' civilization.id %}'" type="button" class="btn btn-success">

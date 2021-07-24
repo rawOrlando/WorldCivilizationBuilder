@@ -33,6 +33,8 @@ def spend_resources_on_tile_maintance(tile, spent, civilization, year):
 
 def spend_resources_on_project(project, spent, civilization, year):
     # Todo split this up
+    if not spent > 0:
+        return
     project.last_spent = year
     if project.is_research():
         project.spent += spent
@@ -47,6 +49,7 @@ def spend_resources_on_project(project, spent, civilization, year):
         project.save()
         if project.spent >= project.needed:
             project.territory.controler = civilization
+            project.territory.last_year_updated = year
             project.territory.maintaned = True
             project.territory.save()
             project.delete()
@@ -86,7 +89,21 @@ def advance_civilization_a_season(civilization):
 
         repopulate(civilization)
 
+        decay_unattended_projects(civilization)
+
     civilization.save()
+
+
+def decay_unattended_projects(civilization):
+    for project in civilization.projects.all():
+        decay = int(civilization.last_year_updated) - int(project.last_spent) 
+        if decay > 0:
+            if project.spent <= 0:
+                project.delete()
+            else:
+                print(decay**2)
+                project.spent -= decay**2
+                project.save()
 
 def repopulate(civilization):
     for settlement in civilization.settlements.all():
