@@ -33,6 +33,10 @@ class Civilization(models.Model):
                 return True
         return False
 
+    def get_all_settlement_locations(self):
+        return self.settlements.filter(projects=None).values_list("location", flat=True).distinct()
+
+
 # Todo move this stuff to a app called map
 class Tile(models.Model):
     # https://www.redblobgames.com/grids/hexagons/#coordinates
@@ -201,6 +205,11 @@ class Project(models.Model):
         null=True,
         default=None,
         blank=True,)
+
+    def delete(self, *args, **kwargs):
+        if self.needed and not self.spent >= self.needed:
+            self.building.delete()
+        super(Project, self).delete(*args, **kwargs)
 
     def is_research(self):
         return self.tecnology and self.territory is None and self.building is None

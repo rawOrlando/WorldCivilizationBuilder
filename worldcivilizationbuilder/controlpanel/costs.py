@@ -11,18 +11,16 @@ def generate_resources(civilization):
         "Tropical Forests": 0,
         "Rivers": 0,
         "Shores": 0,
-        "Plains": 0,
+        "Plainss": 0, # todo figure (ss) out?
     }
     resources = 0
     for tile in civilization.tiles.all():
         for asset in tile.assets:
             assets[asset+"s"] += 1
         resources += generate_resources_from_tile(civilization, tile)
-
     # Generate through settlements
     for settlement in civilization.settlements.all():
         resources += generate_resources_from_settlement(settlement)
-
     if is_in_fighting(civilization):
         resources = resources/2
 
@@ -45,7 +43,7 @@ def generate_resources_from_tile(civilization, tile):
         resources += 1
     # Generat food resources from hunting
     if (civilization.can_hunt() and 
-        ("Forest" in assets or "Plain" in assets) and
+        ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
         resources += 1
     return resources
@@ -62,13 +60,13 @@ def generate_resources_from_settlement(settlement):
         return 3
     return 2
 
-def get_maintance_projects(civilzation):
+def get_maintance_projects(civilization):
     maintance_projects = []
 
     # get all maintance projects for maintianing land
     # get all settlements locations
-    settlement_locations = civilzation.settlements.all().values_list("location", flat=True).distinct()
-    for tile in civilzation.tiles.all():
+    settlement_locations = civilization.get_all_settlement_locations()
+    for tile in civilization.tiles.all():
         if not tile.maintaned:
             cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
             maintance = {
@@ -92,7 +90,7 @@ def calculate_maintance_cost_for_tile(tile, settlement_locations=None, simple=Fa
 
 def calculate_distance_to_closest_settlement(tile, settlement_locations=None):
     if settlement_locations is None:
-        settlement_locations = tile.controler.settlements.all().values_list("location", flat=True).distinct()
+        settlement_locations = tile.controler.get_all_settlement_locations()
     smallest_distance = math.inf
     for settlement_location in settlement_locations:
         distance = tile.distance_between(Tile.objects.get(id=settlement_location))

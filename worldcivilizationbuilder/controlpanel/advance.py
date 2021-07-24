@@ -24,9 +24,7 @@ def spend_resources_on_tile_maintance(tile, spent, civilization, year):
     # Todo find a way this does not need to be calculated again
     needed = calculate_maintance_cost_for_tile(
         tile, 
-        civilization.settlements.all().values_list(
-            "location", flat=True
-        ).distinct())
+        civilization.get_all_settlement_locations())
     if needed <= tile.maintance_spent_already:
         tile.maintaned = True
     tile.save()

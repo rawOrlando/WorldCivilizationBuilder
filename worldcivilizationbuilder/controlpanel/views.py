@@ -137,9 +137,10 @@ def new_exploration(request, civilization_id):
 
     neighbors = neighbors.difference(list(civilization.tiles.all()))
     tiles_info = []
-    settlement_locations = civilization.settlements.all().values_list("location", flat=True).distinct()
     for tile_neighbor in neighbors:
-        cost = calculate_maintance_cost_for_tile(tile_neighbor, settlement_locations, simple=True)
+        cost = calculate_maintance_cost_for_tile(tile_neighbor,
+            settlement_locations=civilization.get_all_settlement_locations(),
+            simple=True)
         tiles_info.append(
             {
                 "id": tile_neighbor.id,
