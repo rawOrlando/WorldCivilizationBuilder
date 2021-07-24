@@ -36,7 +36,6 @@ def generate_resources(civilization):
         # I dont like how is changedbehind the scene
         resource_bundle = generate_resources_from_tile(civilization, tile, resource_bundle)
     # Generate through settlements
-    print(resource_bundle.food)
     for settlement in civilization.settlements.all():
         resource_bundle = generate_resources_from_settlement(settlement, resource_bundle)
     resources = resource_bundle.simmple_total()
@@ -51,7 +50,7 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
     if (during_forest_fire(civilization) and 
         ("Tropical Forest" in assets or
          "Forest" in assets)):
-        return 0
+        return resource_bundle
     # Generate food reasouces from Tropical Forests
     if "Tropical Forest" in assets:
         resource_bundle.food += 1
@@ -66,6 +65,9 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
         ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
         resource_bundle.food += 1
+        if civilization.technologies.filter(name="Domesticated Dogs").exists():
+            print("Dogs")
+            resource_bundle.food += 0.25
     return resource_bundle
 
 def generate_resources_from_settlement(settlement, resource_bundle): 
