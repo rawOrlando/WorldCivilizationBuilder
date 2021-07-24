@@ -1,0 +1,18 @@
+{% block content %}
+<p>Create a new Settlement:</p><br>
+<form method="post">
+  {% csrf_token %}
+  <p>Please select a tile:</p>
+  {% for tile in tiles %}
+  <!--  tile  -->
+  &nbsp;&nbsp; <input type="radio" id="tile_{{tile.id}}" name="tile" value="tile_{{tile.id}}"> <label for="tile_{{tile.id}}">{{tile.name}}</label>
+  <br>
+  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  {{ tile.assets }}<br>
+  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  Cost: {{ tile.cost }}
+  <br><br>
+  {% endfor %}
+  <button type="submit" class="btn btn-success" >Sumbit</button>
+</form>
+{% endblock %}

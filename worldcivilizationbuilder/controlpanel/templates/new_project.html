@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<button onclick="location.href='{% url 'new_research' civilization.id %}'" type="button">
+         research</button>
+<button onclick="location.href='{% url 'new_exploration' civilization.id %}'" type="button">
+         exploration</button>
+<button onclick="location.href='{% url 'new_settlement' civilization.id %}'" type="button">
+         building</button>
+{% endblock %}

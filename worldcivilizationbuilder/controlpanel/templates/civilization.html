@@ -57,9 +57,14 @@ function sumResources() {
       {% if project.needed != None %}
       / {{ project.needed }}
       {% endif %}
-    </li> 
+    
     {% endfor %}
+    <li class="list-group-item">
+    <button onclick="location.href='{% url 'new_project' civilization.id %}'" type="button" class="btn btn-success">
+         New Project</button>
+    </li> 
   </ul>
+
   <!-- Todo Create a new projects button -->
   <!-- Todo Map -->
   <button type="submit" class="btn btn-success" >Sumbit</button>

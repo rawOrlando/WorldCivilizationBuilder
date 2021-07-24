@@ -148,7 +148,7 @@ class Settlement(models.Model):
 class Project(models.Model):
     # Claiming land, building settlements, and researching technology
     name = models.CharField(max_length=100)
-    spent = models.IntegerField()
+    spent = models.IntegerField(default=0)
     # Last time resources were spent on this project.
     last_spent = models.FloatField()
     needed = models.IntegerField(null=True, blank=True, default=None)

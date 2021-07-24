@@ -53,6 +53,10 @@ def generate_resources_from_tile(civilization, tile):
 def generate_resources_from_settlement(settlement): 
     if durring_epidemic(settlement.civilization):
         return 0
+
+    if settlement.being_built:
+        return 0
+
     # overly simple first pass
     if settlement.is_capital:
         return 3
@@ -76,7 +80,9 @@ def get_maintance_projects(civilzation):
 
     return maintance_projects
 
-def calculate_maintance_cost_for_tile(tile, settlement_locations):
+def calculate_maintance_cost_for_tile(tile, settlement_locations=None):
+    if settlement_locations is None:
+        settlement_locations = tile.controler.settlements.all().values_list("location", flat=True).distinct()
     smallest_distance = math.inf
     for settlement_location in settlement_locations:
         distance = tile.distance_between(Tile.objects.get(id=settlement_location))

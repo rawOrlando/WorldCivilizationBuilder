@@ -2,8 +2,12 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 from django.template import loader
+from django.shortcuts import redirect
 
-from controlpanel.models import Civilization, Tile, Project
+from controlpanel.models import (Civilization,
+                                 Tile, 
+                                 Settlement, 
+                                 Project)
 from controlpanel.advance import (spend_resources,
                                   advance_civilization_a_season)
 from controlpanel.costs import (get_maintance_projects,
@@ -18,8 +22,8 @@ def index(request):
     return render(request, 'civilization_list.html', context)
 
 
-def civilization(request, civilzation_id):
-    civilization = Civilization.objects.get(id=civilzation_id)
+def civilization(request, civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
     year = civilization.last_year_updated
     if request.POST:
         spend_resources(civilization, year=year,
@@ -35,14 +39,113 @@ def civilization(request, civilzation_id):
     return render(request, 'civilization.html', context)
 
 
-def civilization_details(request, civilzation_id):
-    civilization = Civilization.objects.get(id=civilzation_id)
+def civilization_details(request,civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
     context = {
         'civilization': civilization,
         'technologies': list(civilization.technologies.all()),
         'projects': list(civilization.projects.values())
     }
     return render(request, 'civilization_details.html', context)
+
+def new_project(request, civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
+    context = {
+        'civilization': civilization
+    }
+    return render(request, 'new_project.html', context)
+
+def new_research(request, civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
+    # Todo change this so that category is a spin choser.
+    if request.POST:
+        tec_name = request.POST["technology_category"]
+        Project.objects.create(
+            name="Research " + tec_name,
+            tecnology=tec_name,
+            last_spent=civilization.last_year_updated,
+            civilization=civilization)
+        return redirect('/'+str(civilization_id)+'/')
+
+
+    context = {
+        'civilization': civilization
+    }
+    return render(request, 'new_research.html', context)
+
+
+def new_settlement(request, civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
+    if request.POST:
+        tile_id = request.POST["tile"].replace("tile_", "")
+        name = request.POST["name"]
+        settlement = Settlement.objects.create(
+            name=name,
+            population=0,
+            civilization=civilization,
+            location=Tile.objects.get(id=tile_id),
+            )
+        Project.objects.create(
+            name="Building " + name,
+            building=settlement,
+            needed=30,
+            last_spent=civilization.last_year_updated,
+            civilization=civilization)
+
+        return redirect('/'+str(civilization_id)+'/')
+    # Get all tiles without settlements
+    tiles = civilization.tiles.filter(settlements=None)
+    tiles_info = []
+    for tile in tiles:
+        tiles_info.append(
+            {
+                "id": tile.id,
+                "name": str(tile),
+                "assets": tile.assets,
+            }
+        )
+
+    context = {
+        'civilization': civilization, 
+        'tiles': tiles_info,
+    }
+    return render(request, 'new_settlement.html', context)
+
+
+def new_exploration(request, civilization_id):
+    civilization = Civilization.objects.get(id=civilization_id)
+    if request.POST:
+        tile_id = request.POST["tile"].replace("tile_", "")
+        tile = Tile.objects.get(id=tile_id)
+        Project.objects.create(
+            name="Exploring " + str(tile),
+            territory=tile,
+            needed=calculate_maintance_cost_for_tile(tile),
+            last_spent=civilization.last_year_updated,
+            civilization=civilization)
+        
+        return redirect('/'+str(civilization_id)+'/')
+    # Get all the tiles around your tiles.
+    # Todo not right Tile
+    tiles = civilization.tiles.filter(settlements=None)
+    tiles_info = []
+    settlement_locations = civilization.settlements.all().values_list("location", flat=True).distinct()
+    for tile in tiles:
+        cost = calculate_maintance_cost_for_tile(tile, settlement_locations)
+        tiles_info.append(
+            {
+                "id": tile.id,
+                "name": str(tile),
+                "assets": tile.assets,
+                "cost": cost,
+            }
+        )
+
+    context = {
+        'civilization': civilization, 
+        'tiles': tiles_info,
+    }
+    return render(request, 'new_settlement.html', context)
 
 
 def convert_input_to_resources_spent(data):
