@@ -65,8 +65,7 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
         ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
         resource_bundle.food += 1
-        if civilization.technologies.filter(name="Domesticated Dogs").exists():
-            print("Dogs")
+        if civilization.has_technology("Domesticated Dogs"):
             resource_bundle.food += 0.25
     return resource_bundle
 
