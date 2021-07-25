@@ -246,6 +246,21 @@ class Project(models.Model):
             name=self.name, owner=self.civilization.name)
 
 class Technology(models.Model):
+    BONE_TOOLS_NAME = "Bone Tools"
+    FIRE_NAME = "Fire"
+    BOILING_WATER_NAME = "Boiling Water"
+    COMPOSITE_TOOLS_NAME = "Composite Tools"
+    TANNING_NAME = "Tanning"
+    FOOD_DRYING_NAME = "Food Drying"
+    DOMESTICATED_DOGS_NAME = "Domesticated Dogs"
+    SOAP_NAME = "Soap"
+    SLINGS_NAME = "Slings"
+    PALEO_TECH_NAMES = [
+        BONE_TOOLS_NAME, FIRE_NAME, BOILING_WATER_NAME,
+        COMPOSITE_TOOLS_NAME, TANNING_NAME, FOOD_DRYING_NAME,
+        DOMESTICATED_DOGS_NAME, SOAP_NAME, SLINGS_NAME
+    ]
+
     name = models.CharField(max_length=100)
     tec_type = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
@@ -255,6 +270,9 @@ class Technology(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="unlocks")
+    needed_maintance = models.IntegerField(
+        null=True, 
+        blank=True)
 
     def __str__(self):
         return self.name
@@ -272,9 +290,16 @@ class CivTec(models.Model):
     last_year_maintance_applied = models.FloatField(default=0)
     # Spent so far this year 
     maintance_spent_already = models.IntegerField(default=0)
+    # Should this field only
     needed_maintance = models.IntegerField()
     maintaned = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
+
+    @property
+    def needed_maintance(self):
+        if self.technology.needed_maintance:
+            return self.technology.needed_maintance
+        return 0
 
     def reset_maintance(self):
         self.maintaned = False
