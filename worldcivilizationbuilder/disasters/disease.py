@@ -13,7 +13,7 @@ def suffer_disease(civilization):
 		if civilization.has_technology(Technology.SOAP_NAME):
 			settlement_chance = settlement_chance // 4
 		for person in range(1, population):
-			happened = random.randrange(1, 10000)
+			happened = random.randrange(1, 10001)
 			if happened <= settlement_chance:
 				settlement.population -= 1
 

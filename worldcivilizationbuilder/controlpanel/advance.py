@@ -52,7 +52,7 @@ def spend_resources_on_project(project, spent, civilization, year):
     if project.is_research():
         project.spent += spent
         project.save()
-        chance = random.randrange(1,100)
+        chance = random.randrange(1,101)
         if project.spent >= chance:
             unlock_another_technology(civilization)
             project.delete()
@@ -130,7 +130,7 @@ def repopulate(civilization):
         if settlement.population >= get_population_limit(settlement):
             continue
         for i in range(0, (settlement.population // 10) + 1):
-            chance = random.randrange(1,100)
+            chance = random.randrange(1,101)
             if chance <= 10:
                 settlement.population += 1
                 settlement.save()

@@ -43,7 +43,7 @@ def generate_resources(civilization):
     if is_in_fighting(civilization):
         resources = resources//2
 
-    return resources
+    return resource_bundle
 
 def generate_resources_from_tile(civilization, tile, resource_bundle):
     assets = tile.assets

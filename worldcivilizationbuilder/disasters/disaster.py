@@ -3,7 +3,7 @@ from disasters.disease import suffer_disease
 import random
 
 def next_disaster(year, civilization):
-    chance = random.randrange(1,6)
+    chance = random.randrange(1,7)
     if chance == 1:
         # Disease Outbreak
         CurrentDisaster.objects.create(
