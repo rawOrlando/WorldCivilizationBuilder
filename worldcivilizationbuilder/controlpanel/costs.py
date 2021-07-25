@@ -1,4 +1,4 @@
-from controlpanel.models import Civilization, Tile
+from controlpanel.models import Civilization, Technology, Tile
 from disasters.disaster import (is_in_a_draught,
                                 during_forest_fire,
                                 is_in_fighting,
@@ -19,7 +19,7 @@ class ResourceBundle:
         self.wildcard = 0.0
 
     def simmple_total(self):
-        return int(self.food) + int(self.water) + int(self.wildcard)
+        return int(self.food) + int(self.water) + int(self.leather) + int(self.wildcard)
 
 def generate_resources(civilization):
     assets = {
@@ -41,7 +41,7 @@ def generate_resources(civilization):
         resource_bundle = generate_resources_from_settlement(settlement, resource_bundle)
     resources = resource_bundle.simmple_total()
     if is_in_fighting(civilization):
-        resources = resources/2
+        resources = resources//2
 
     return resources
 
@@ -66,9 +66,9 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
         ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
         resource_bundle.food += 1
-        if civilization.has_technology("Domesticated Dogs"):
+        if civilization.has_technology(Technology.DOMESTICATED_DOGS_NAME):
             resource_bundle.food += 0.25
-        if (civilization.has_technology("Tanning") and
+        if (civilization.has_technology(Technology.TANNING_NAME) and
             1==calculate_distance_to_closest_settlement(tile)):
             resource_bundle.leather += 1
     return resource_bundle
