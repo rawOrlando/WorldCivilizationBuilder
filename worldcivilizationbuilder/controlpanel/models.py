@@ -37,6 +37,9 @@ class Civilization(models.Model):
     def has_technology(self, technology_name):
         return self.civtec.filter(technology__name=technology_name, active=True).exists()
 
+    def has_technology_knowledge(self, technology_name):
+        return self.civtec.filter(technology__name=technology_name).exists()
+
     def get_all_settlement_locations(self):
         return self.settlements.filter(projects=None).values_list("location", flat=True).distinct()
 
