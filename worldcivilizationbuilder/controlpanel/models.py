@@ -249,6 +249,12 @@ class Technology(models.Model):
     name = models.CharField(max_length=100)
     tec_type = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
+    prerequisite = models.ForeignKey(
+        "Technology",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="unlocks")
 
     def __str__(self):
         return self.name
