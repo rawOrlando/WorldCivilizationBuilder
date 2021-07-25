@@ -51,7 +51,9 @@ class Civilization(models.Model):
         neighbors = neighbors.difference(list(self.tiles.all()))
 
         for tile in neighbors.copy():
-            if not tile.river:
+            if (not tile.river and 
+                # Todo cleaner way?
+                not (self.has_technology("Boiling Water") and tile.shore)):
                 neighbors.remove(tile)
         return neighbors
 
