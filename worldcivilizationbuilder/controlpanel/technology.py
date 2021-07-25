@@ -9,18 +9,14 @@ def unlock_another_technology(civilization):
 	for tech_name in Technology.PALEO_TECH_NAMES:
 		if civilization.has_technology(tech_name):
 			possible_tech_names.remove(tech_name)
-	print(possible_tech_names)
 
 	# remove tech you don't have prerequisite for
 	possible_tech = []
 	for tech_name in possible_tech_names:
-		print(tech_name)
 		tech = Technology.objects.get(name=tech_name)
 		if not (tech.prerequisite and 
 			not civilization.has_technology(tech.prerequisite.name)):
 			possible_tech.append(tech)
-
-	print(possible_tech)
 
 	# todo what to do when all tech has been unlocked for this level
 	if len(possible_tech) == 0:
@@ -32,6 +28,7 @@ def unlock_another_technology(civilization):
 	CivTec.objects.create(
 		civilization=civilization,
 		technology=tech,
+		active=True,
 		)
 
 
