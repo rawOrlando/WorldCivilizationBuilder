@@ -40,6 +40,20 @@ class Civilization(models.Model):
     def get_all_settlement_locations(self):
         return self.settlements.filter(projects=None).values_list("location", flat=True).distinct()
 
+    def possible_exploration_tiles(self):
+        # Get all the tiles around your tiles.
+        # todo find a way to do this with django
+        neighbors = set()
+        # for now need rivers
+        for controled_tile in self.tiles.all():
+            neighbors = neighbors.union(set(controled_tile.get_neighbors()))
+
+        neighbors = neighbors.difference(list(self.tiles.all()))
+
+        for tile in neighbors.copy():
+            if not tile.river:
+                neighbors.remove(tile)
+        return neighbors
 
 # Todo move this stuff to a app called map
 class Tile(models.Model):

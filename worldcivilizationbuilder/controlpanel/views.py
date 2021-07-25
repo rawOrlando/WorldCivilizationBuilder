@@ -131,12 +131,8 @@ def new_exploration(request, civilization_id):
         
         return redirect('/'+str(civilization_id)+'/')
     # Get all the tiles around your tiles.
-    # Todo not right Tile
-    neighbors = set()
-    for controled_tile in civilization.tiles.all():
-        neighbors = neighbors.union(set(controled_tile.get_neighbors()))
+    neighbors = civilization.possible_exploration_tiles()
 
-    neighbors = neighbors.difference(list(civilization.tiles.all()))
     tiles_info = []
     for tile_neighbor in neighbors:
         cost = calculate_maintance_cost_for_tile(tile_neighbor,
