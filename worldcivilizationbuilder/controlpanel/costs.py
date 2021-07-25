@@ -74,17 +74,20 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
     return resource_bundle
 
 def generate_resources_from_settlement(settlement, resource_bundle): 
-    if durring_epidemic(settlement.civilization):
-        return resource_bundle
-
     if settlement.being_built:
         return resource_bundle
 
+    generate_wildcard = 0
     # overly simple first pass
     if settlement.is_capital:
-        resource_bundle.wildcard += 3
+        generate_wildcard += 3
     else:
-        resource_bundle.wildcard += 2
+        generate_wildcard += 2
+
+    if durring_epidemic(settlement.civilization):
+        generate_wildcard = generate_wildcard//2
+
+    resource_bundle.wildcard += generate_wildcard
     return resource_bundle
 
 def get_maintance_projects(civilization):
