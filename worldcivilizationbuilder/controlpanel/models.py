@@ -68,6 +68,7 @@ class Tile(models.Model):
     river = models.BooleanField(default=False)
     lake = models.BooleanField(default=False)
     shore = models.BooleanField(default=False)
+    ocean = models.BooleanField(default=False)
     snowy = models.BooleanField(default=False)
 
     # The stuf fpr maintance
