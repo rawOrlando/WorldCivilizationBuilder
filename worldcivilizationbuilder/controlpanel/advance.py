@@ -1,4 +1,6 @@
 from controlpanel.costs import calculate_maintance_cost_for_tile
+from controlpanel.population import (get_population_limit,
+    migrate_initial_population_to_new_settlement)
 from disasters.disaster import next_disaster
 import random
 
@@ -67,8 +69,7 @@ def spend_resources_on_project(project, spent, civilization, year):
         project.spent += spent
         project.save()
         if project.spent >= project.needed:
-            # Some how get 10 population
-            # project.building.project 
+            migrate_initial_population_to_new_settlement(project.building)
             project.delete()
 
 def advance_civilization_a_season(civilization):
@@ -123,6 +124,8 @@ def decay_unattended_projects(civilization):
 
 def repopulate(civilization):
     for settlement in civilization.settlements.all():
+        if settlement.population >= get_population_limit(settlement):
+            continue
         for i in range(0, (settlement.population // 10) + 1):
             chance = random.randrange(1,100)
             if chance <= 10:
