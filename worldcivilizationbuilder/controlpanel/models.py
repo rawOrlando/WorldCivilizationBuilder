@@ -228,7 +228,7 @@ class Project(models.Model):
         blank=True,)
 
     def delete(self, *args, **kwargs):
-        if self.needed and not self.spent >= self.needed:
+        if self.building and self.needed and not self.spent >= self.needed:
             self.building.delete()
         super(Project, self).delete(*args, **kwargs)
 
