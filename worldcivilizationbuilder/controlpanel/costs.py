@@ -66,7 +66,7 @@ def generate_resources_from_tile(civilization, tile, resource_bundle):
         ("Forest" in assets or "Plains" in assets) and
         not tile.settlements.count() > 0):
         resource_bundle.food += 1
-        if civilization.has_technology("Domesticated Dogs"):
+        if civilization.has_technology(Technology.DOMESTICATED_DOGS_NAME):
             resource_bundle.food += 0.25
         if (civilization.has_technology(Technology.TANNING_NAME) and
             1==calculate_distance_to_closest_settlement(tile)):

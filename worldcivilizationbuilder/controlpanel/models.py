@@ -28,11 +28,11 @@ class Civilization(models.Model):
 
     def can_hunt(self):
         return self.civtec.filter(
-            Q(technology__name="Bone Tools", active=True) | 
-            Q(technology__name="Slings"), active=True).exists()
+            Q(technology__name=Technology.BONE_TOOLS_NAME, active=True) | 
+            Q(technology__name=Technology.SLINGS_NAME), active=True).exists()
 
     def can_spear_fish(self):
-        return self.has_technology("Bone Tools")
+        return self.has_technology(Technology.BONE_TOOLS_NAME)
 
     def has_technology(self, technology_name):
         return self.civtec.filter(technology__name=technology_name, active=True).exists()
@@ -53,7 +53,7 @@ class Civilization(models.Model):
         for tile in neighbors.copy():
             if (not tile.river and 
                 # Todo cleaner way?
-                not (self.has_technology("Boiling Water") and tile.shore)):
+                not (self.has_technology(Technology.BOILING_WATER_NAME) and tile.shore)):
                 neighbors.remove(tile)
         return neighbors
 
