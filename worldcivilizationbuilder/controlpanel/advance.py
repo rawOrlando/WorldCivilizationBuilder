@@ -1,7 +1,7 @@
 from controlpanel.costs import calculate_maintance_cost_for_tile
 from controlpanel.population import (get_population_limit,
     migrate_initial_population_to_new_settlement)
-from disasters.disaster import next_disaster
+from disasters.disaster import next_disaster, move_disaster_along
 from controlpanel.technology import unlock_another_technology
 import random
 
@@ -78,18 +78,20 @@ def advance_civilization_a_season(civilization):
     new_time = 0.25 + civilization.last_year_updated
     civilization.last_year_updated = new_time
 
+
     # if new year 
     if new_time % 1 == 0.0:
         # Generate next disaster
         next_disaster(new_time, civilization)
 
+    # Remove finished disasters
+    for disaster in civilization.current_disasters.all():
+        move_disaster_along(disaster, new_time)
+
+    # if new year 
+    if new_time % 1 == 0.0:
         # Check to see if disaster repeated an escalates
         # Todo
-
-        # Remove finished disasters
-        for disaster in civilization.current_disasters.all():
-            if disaster.end_time <= new_time:
-                disaster.delete()
 
         # Lose tiles if un maintaned
         for tile in civilization.tiles.all():
