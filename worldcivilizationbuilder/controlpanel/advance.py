@@ -2,6 +2,7 @@ from controlpanel.costs import calculate_maintance_cost_for_tile
 from controlpanel.population import (get_population_limit,
     migrate_initial_population_to_new_settlement)
 from disasters.disaster import next_disaster
+from controlpanel.technology import unlock_another_technology
 import random
 
 def spend_resources(civilization, year, resources_spent):
@@ -53,7 +54,7 @@ def spend_resources_on_project(project, spent, civilization, year):
         project.save()
         chance = random.randrange(1,100)
         if project.spent >= chance:
-            # Todo something here.
+            unlock_another_technology(civilization)
             project.delete()
             pass
     if project.is_exploration():
