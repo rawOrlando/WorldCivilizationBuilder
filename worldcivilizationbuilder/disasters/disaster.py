@@ -3,7 +3,7 @@ from disasters.disease import suffer_disease
 import random
 
 def next_disaster(year, civilization):
-    chance = random.randrange(1,6)
+    chance = random.randrange(1,7)
     if chance == 1:
         # Disease Outbreak
         CurrentDisaster.objects.create(
@@ -73,14 +73,14 @@ def durring_epidemic(civilization):
 
 
 
-def move_disaster_along(disater, new_time):
+def move_disaster_along(disaster, new_time):
     if disaster==Disaster.DISEASE_OUTBREAK():
         suffer_disease(disaster.civilization)
     if disaster.end_time <= new_time:
         end_disater(disaster)
 
 
-def end_disater(disater):
+def end_disater(disaster):
     disaster.delete()
 
 
