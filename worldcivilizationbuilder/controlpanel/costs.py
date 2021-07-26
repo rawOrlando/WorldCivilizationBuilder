@@ -11,6 +11,8 @@ class ResourceBundle:
     food 
     water
     and wildcard exist
+
+    Should this just be a dictionary?
     """
     def __init__(self): 
         self.food = 0.0
@@ -19,7 +21,14 @@ class ResourceBundle:
         self.wildcard = 0.0
 
     def simmple_total(self):
-        return int(self.food) + int(self.water) + int(self.leather) + int(self.wildcard)
+        return (int(self.food) + int(self.water) + 
+            int(self.leather) + int(self.wildcard))
+
+    def __floordiv__(self, other):
+        self.food = self.food//other
+        self.water = self.water//other
+        self.leather = self.leather//other
+        self.wildcard = self.wildcard//other
 
 def generate_resources(civilization):
     assets = {
@@ -39,9 +48,9 @@ def generate_resources(civilization):
     # Generate through settlements
     for settlement in civilization.settlements.all():
         resource_bundle = generate_resources_from_settlement(settlement, resource_bundle)
-    resources = resource_bundle.simmple_total()
+
     if is_in_fighting(civilization):
-        resources = resources//2
+        resources = resource_bundle//2
 
     return resource_bundle
 
