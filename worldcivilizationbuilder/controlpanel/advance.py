@@ -102,11 +102,12 @@ def advance_civilization_a_season(civilization):
             tile.save() 
 
         for tech in civilization.civtec.all():
-            if not tech.maintaned:
-                tech.active = False
-            tech.reset_maintance()
+            if tech.needed_maintance:
+                if not tech.maintaned:
+                    tech.active = False
+                tech.reset_maintance()
 
-            tech.save()
+                tech.save()
 
         repopulate(civilization)
 
