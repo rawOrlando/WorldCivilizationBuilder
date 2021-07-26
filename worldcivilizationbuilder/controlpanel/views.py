@@ -32,9 +32,11 @@ def civilization(request, civilization_id):
             resources_spent=convert_input_to_resources_spent(request.POST))
         advance_civilization_a_season(civilization)
     
+    resource_bundle = generate_resources(civilization) 
     context = {
         'civilization': civilization,
-        'resources': generate_resources(civilization),
+        'resources': resource_bundle.__dict__,
+        'total_resources': resource_bundle.simmple_total(),
         'maintance_projects': get_maintance_projects(civilization),
         'projects': list(civilization.projects.values())
     }

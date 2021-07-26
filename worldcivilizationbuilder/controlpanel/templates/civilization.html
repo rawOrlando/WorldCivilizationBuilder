@@ -30,9 +30,10 @@ function sumResources() {
 <p>Year: {{civilization.year_str}}</p>
 <!-- Todo Resources -->
 <p>Resources: {{resources}}</p>
+<p>Total Resources: {{total_resources}}</p>
 <!-- Todo Total Resources -->
-<p>Total Resources: 0</p>
-<p id="total_used_resources"> 0</p>
+<p>Spent Resources: <p id="total_used_resources"> 0</p></p>
+
 <form method="post">
   {% csrf_token %}
   <!-- Todo Maintance -->
