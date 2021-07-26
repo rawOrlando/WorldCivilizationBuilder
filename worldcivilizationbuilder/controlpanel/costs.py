@@ -37,6 +37,7 @@ def generate_resources(civilization):
         "Rivers": 0,
         "Shores": 0,
         "Plainss": 0, # todo figure (ss) out?
+        "Hills": 0
     }
     resources = 0
     resource_bundle = ResourceBundle()
@@ -126,6 +127,11 @@ def get_maintance_projects(civilization):
     return maintance_projects
 
 def calculate_maintance_cost_for_tile(tile, settlement_locations=None, simple=False):
+    """
+
+    Note:
+    if there are no settlements it reurn infite whic is bad.
+    """
     smallest_distance = calculate_distance_to_closest_settlement(tile, settlement_locations)
     cost = 1 + smallest_distance * 2
     if not simple:

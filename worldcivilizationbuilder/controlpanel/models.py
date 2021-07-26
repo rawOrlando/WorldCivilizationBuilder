@@ -130,6 +130,8 @@ class Tile(models.Model):
             assets.append("Shore")
         if self.plains:
             assets.append("Plains")
+        if self.hills:
+            assets.append("Hill")
         # Todo add the others
         return assets
 
