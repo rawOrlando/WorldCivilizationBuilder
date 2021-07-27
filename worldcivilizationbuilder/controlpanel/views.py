@@ -15,6 +15,7 @@ from controlpanel.costs import (get_maintance_projects,
                                generate_resources,
                                calculate_maintance_cost_for_tile,
                                calculate_distance_to_closest_settlement)
+from controlpanel.resources import acceptable_resources_spent
 
 def index(request):
     civilization_list = Civilization.objects.all()
@@ -27,18 +28,27 @@ def index(request):
 def civilization(request, civilization_id):
     civilization = Civilization.objects.get(id=civilization_id)
     year = civilization.last_year_updated
+    resource_bundle = generate_resources(civilization)
+    error = None
     if request.POST:
-        spend_resources(civilization, year=year,
-            resources_spent=convert_input_to_resources_spent(request.POST))
-        advance_civilization_a_season(civilization)
+        resources_spent = convert_input_to_resources_spent(request.POST)
+        # Check to make sure resources spent is corect?
+        if not acceptable_resources_spent(resource_bundle, resources_spent):
+            # todo have error to tell user why input was not accepted.
+            error = "You spent more than was available."
+
+        if not error:
+            spend_resources(civilization, year=year,
+                resources_spent=resources_spent)
+            advance_civilization_a_season(civilization)
     
-    resource_bundle = generate_resources(civilization) 
     context = {
         'civilization': civilization,
         'resources': resource_bundle.__dict__,
         'total_resources': resource_bundle.simmple_total(),
         'maintance_projects': get_maintance_projects(civilization),
-        'projects': list(civilization.projects.values())
+        'projects': list(civilization.projects.values()),
+        'error': error,
     }
     return render(request, 'civilization.html', context)
 

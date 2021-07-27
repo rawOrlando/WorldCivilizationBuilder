@@ -25,6 +25,9 @@ function sumResources() {
 <!-- Temp make a button for that  -->
 <button onclick="location.href='{% url 'civilization_details' civilization.id %}'" type="button">
          details</button>
+{% if error%}
+<h2>{{error}}</h2>
+{% endif %}
 <!-- Year and Season -->
 <p>Year: {{civilization.year_str}}</p>
 <!-- Todo Resources -->
