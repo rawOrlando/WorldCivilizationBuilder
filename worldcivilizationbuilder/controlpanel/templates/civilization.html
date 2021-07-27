@@ -6,13 +6,12 @@
 <script>
 function sumResources() {
   let total = 0;
-  var items = document.getElementsByName("maintance_input");
-  for (var i = 0; i < items.length; ++i) {
-    total +=  parseInt(items[i].value);
-  }
-  var items = document.getElementsByName("project_input");
-  for (var i = 0; i < items.length; ++i) {
-    total +=  parseInt(items[i].value);
+  var inputs = document.getElementsByTagName("input");
+  for (var i = 0; i < inputs.length; ++i) {
+    input_name = inputs[i].getAttribute("name")
+    if (input_name && (input_name.indexOf("maintance_") == 0  || input_name.indexOf("project_") == 0)) {
+      total +=  parseInt(inputs[i].value);
+    } 
   }
   document.getElementById("total_used_resources").innerHTML = total;
 }
@@ -32,7 +31,7 @@ function sumResources() {
 <p>Resources: {{resources}}</p>
 <p>Total Resources: {{total_resources}}</p>
 <!-- Todo Total Resources -->
-<p>Spent Resources: <p id="total_used_resources"> 0</p></p>
+<p>Spent Resources: <text id="total_used_resources"> 0</text></p>
 
 <form method="post">
   {% csrf_token %}
