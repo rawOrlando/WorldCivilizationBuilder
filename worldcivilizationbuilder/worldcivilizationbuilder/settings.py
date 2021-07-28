@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'controlpanel.apps.ControlPanelConfig',
     'disasters.apps.DisastersConfig',
+    'projects.apps.ProjectsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

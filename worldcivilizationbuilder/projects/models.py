@@ -34,14 +34,13 @@ class Project(models.Model):
             name=self.name, owner=self.civilization.name)
 
 
-def BaseProjectModel:
+class SpecficProject(models.Model):
     """
     This is some stuff for all  general the specfic project models
     to simply to the the relation ship
     """
     base_project = tile = models.OneToOneField(
         Project,
-        related_name="specfic_project",
         on_delete=models.CASCADE,
         )
 
@@ -65,13 +64,16 @@ def BaseProjectModel:
     def civilization(self):
         self.base_project.civilization
 
+    class Meta:
+        abstract = True
 
-def ResearchProject(BaseProjectModel, models.Model):
+
+class ResearchProject(SpecficProject):
     technology_type = models.CharField(
         max_length=100,)
 
 
-def ExplorationProject(BaseProjectModel, models.Model)
+class ExplorationProject(SpecficProject):
     territory = models.ForeignKey(
         Tile,
         related_name="projects",
@@ -79,7 +81,7 @@ def ExplorationProject(BaseProjectModel, models.Model)
         )
 
 
-def SettlementProject(BaseProjectModel, models.Model)
+class SettlementProject(SpecficProject):
     setlement = models.ForeignKey(
         Settlement,
         related_name="projects",
@@ -92,7 +94,7 @@ def SettlementProject(BaseProjectModel, models.Model)
         super(SettlementProject, self).delete(*args, **kwargs)
 
 
-def Maintance:
+class Maintance(models.Model):
     maintaned = models.BooleanField(default=False)
 
     # Made this property to stay consistent with previous stuff.
@@ -110,8 +112,11 @@ def Maintance:
         self.maintaned = False
         self.save()
 
+    class Meta:
+        abstract = True
 
-def TileMaintanceProject(Maintance, BaseProjectModel, models.Model):
+
+class TileMaintanceProject(Maintance, SpecficProject):
     tile = models.OneToOneField(
         Tile,
         related_name="maintance_project",
@@ -119,7 +124,7 @@ def TileMaintanceProject(Maintance, BaseProjectModel, models.Model):
         )
 
 
-def TechnologyMaintanceProject(Maintance, BaseProjectModel, models.Model)
+class TechnologyMaintanceProject(Maintance, SpecficProject):
     technology = models.OneToOneField(
         Technology,
         related_name="maintance_project",
