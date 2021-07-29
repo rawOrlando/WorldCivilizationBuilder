@@ -1,6 +1,18 @@
 from django.db import models
 from controlpanel.models import Civilization, Settlement, Technology, Tile
 
+from controlpanel.population import migrate_initial_population_to_new_settlement
+from controlpanel.technology import unlock_another_technology
+
+import random
+
+class ProjectOption(models.IntegerChoices):
+    research = (1, "Research Project")
+    exploration = (2, "Exploration Project")
+    settlement =(3, "Found Settlement Project")
+    region_maintance = (4, "Region Maintance")
+    technology_maintance = (5, "Technology Maintance")
+
 class Project(models.Model):
     # Claiming land, building settlements, and researching technology
     name = models.CharField(max_length=100)
@@ -14,20 +26,45 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         )
 
-    def is_tile_maintance(self):
-        return type(self.specfic_project) == TileMaintanceProject
+    project_type = models.IntegerField(choices=ProjectOption.choices)
+    specific_project_id = models.IntegerField()
 
-    def is_research(self):
-        return type(self.specfic_project) == ResearchProject
+    @property
+    def specfic_project(self):
+        # replace with a switch
+        if self.project_type == ProjectOption.research:
+            return ResearchProject.objects.get(id=self.specific_project_id)
+        elif self.project_type == ProjectOption.exploration:
+            return ExplorationProject.objects.get(id=self.specific_project_id)
+        elif self.project_type == ProjectOption.settlement:
+            return SettlementProject.objects.get(id=self.specific_project_id)
+        elif self.project_type == ProjectOption.region_maintance:
+            return TileMaintanceProject.objects.get(id=self.specific_project_id)
+        elif self.project_type == ProjectOption.technology_maintance:
+            return TechnologyMaintanceProject.objects.get(id=self.specific_project_id)
+        # Todo this should not be possible
+        return None
 
-    def is_exploration(self):
-        return type(self.specfic_project) == ExplorationProject
+    def delete(self, *args, **kwargs):
+        self.specfic_project.delete(*args, **kwargs)
+        super(Project, self).delete(*args, **kwargs)
 
-    def is_building_settlement(self):
-        return type(self.specfic_project) == SettlementProject
+    def spend(self, amount):
+        self.spent += amount
+        self.last_spent = self.civilization.last_year_updated
 
-    def is_technology_maintance(self):
-        return type(self.specfic_project) == TechnologyMaintanceProject
+        if self._is_complete():
+            self.specfic_project._complete()
+            self.delete()
+            return
+
+        self.save()
+
+    def _is_complete(self):
+        if self.project_type == ProjectOption.research:
+            return self.specfic_project._is_complete()
+        return self.spent >= self.needed
+
 
     def __str__(self):
         return "{name}: ({owner})".format(
@@ -39,59 +76,97 @@ class SpecficProject(models.Model):
     This is some stuff for all  general the specfic project models
     to simply to the the relation ship
     """
-    base_project = tile = models.OneToOneField(
+    # type should be set in base class
+    TYPE = None
+
+    base_project = tile = models.ForeignKey(
         Project,
+        null=True,
+        default=None,
+        #unique=True,
+        blank=True,
         on_delete=models.CASCADE,
         )
-
-    @property
-    def name(self):
-        self.base_project.name
-
-    @property
-    def spent(self):
-        self.base_project.spent
-    
-    @property
-    def last_spent(self):
-        self.base_project.last_spent
-
-    @property
-    def needed(self):
-        self.base_project.needed
-
-    @property
-    def civilization(self):
-        self.base_project.civilization
 
     class Meta:
         abstract = True
 
+    def __getattr__(self, item):
+        # Band aid __dict__ has civilization_id not civilization
+        if item == "civilization":
+            return self.base_project.civilization
+        if item in self.base_project.__dict__:
+            return self.base_project.__dict__[item]
+        raise AttributeError("%r object has no attribute %r" %
+                             (self.__class__.__name__, item))
+
+    @classmethod
+    def _create_project(cls, name, last_spent, civilization, needed = None, **kwargs):
+
+        spec_proj = cls.objects.create(**kwargs)
+
+        print(spec_proj.id)
+
+        spec_proj.base_project = Project.objects.create(
+            name=name,
+            needed=needed,
+            last_spent=last_spent,
+            civilization=civilization,
+            project_type = spec_proj.TYPE,
+            specific_project_id = spec_proj.id,)
+
+        spec_proj.save()
+
+    def __str__(self):
+        return self.base_project.__str__()
+
 
 class ResearchProject(SpecficProject):
+    TYPE = ProjectOption.research 
+
     technology_type = models.CharField(
         max_length=100,)
 
+    def _is_complete(self):
+        chance = random.randrange(1,101)
+        return self.base_project.spent >= chance
+
+    def _complete(self):
+        unlock_another_technology(self.civilization)
+
 
 class ExplorationProject(SpecficProject):
+    TYPE = ProjectOption.exploration
+
     territory = models.ForeignKey(
         Tile,
         related_name="projects",
         on_delete=models.CASCADE,
         )
 
+    def _complete(self):
+        self.territory.controler = self.civilization
+        self.territory.last_year_updated = self.civilization.last_year_updated
+        self.territory.maintaned = True
+        self.territory.save() 
+
 
 class SettlementProject(SpecficProject):
-    setlement = models.ForeignKey(
+    TYPE = ProjectOption.settlement
+
+    settlement = models.ForeignKey(
         Settlement,
         related_name="projects",
         on_delete=models.CASCADE,
         )
 
     def delete(self, *args, **kwargs):
-        if self.building and self.needed and not self.spent >= self.needed:
-            self.building.delete()
+        if not self.base_project._is_complete():
+            self.settlement.delete()
         super(SettlementProject, self).delete(*args, **kwargs)
+
+    def _complete(self):
+        migrate_initial_population_to_new_settlement(self.settlement)
 
 
 class Maintance(models.Model):
@@ -117,6 +192,8 @@ class Maintance(models.Model):
 
 
 class TileMaintanceProject(Maintance, SpecficProject):
+    TYPE = ProjectOption.region_maintance
+
     tile = models.OneToOneField(
         Tile,
         related_name="maintance_project",
@@ -125,6 +202,8 @@ class TileMaintanceProject(Maintance, SpecficProject):
 
 
 class TechnologyMaintanceProject(Maintance, SpecficProject):
+    TYPE = ProjectOption.technology_maintance
+
     technology = models.OneToOneField(
         Technology,
         related_name="maintance_project",
@@ -134,4 +213,5 @@ class TechnologyMaintanceProject(Maintance, SpecficProject):
     def needed(self):
         # is there a better way to override the value of needed for conect Project value
         self.technology.needed_maintance
+
 

@@ -15,7 +15,9 @@ from controlpanel.costs import (get_maintance_projects,
                                calculate_maintance_cost_for_tile,
                                calculate_distance_to_closest_settlement)
 from controlpanel.resources import acceptable_resources_spent
-from projects.models import Project, ResearchProject, ExplorationProject, SettlementProject
+from projects.models import (Project, ProjectOption,
+                             ResearchProject, ExplorationProject, 
+                             SettlementProject)
 
 def index(request):
     civilization_list = Civilization.objects.all()
@@ -74,13 +76,11 @@ def new_research(request, civilization_id):
     # Todo change this so that category is a spin choser.
     if request.POST:
         tec_name = request.POST["technology_category"]
-        proj = Project.objects.create(
+        ResearchProject._create_project(
+            technology_type=tec_name,
             name="Research " + tec_name,
             last_spent=civilization.last_year_updated,
-            civilization=civilization)
-        ResearchProject.objects.create(
-            technology_type=tec_name,
-            base_project=proj)
+            civilization=civilization,)
         return redirect('/'+str(civilization_id)+'/')
 
 
@@ -101,14 +101,12 @@ def new_settlement(request, civilization_id):
             civilization=civilization,
             location=Tile.objects.get(id=tile_id),
             )
-        proj = Project.objects.create(
+        SettlementProject._create_project(
             name="Building " + name,
             needed=30,
             last_spent=civilization.last_year_updated,
-            civilization=civilization)
-        SettlementProject.objects.create(
-            settlement=settlement,
-            base_project=proj)
+            civilization=civilization,
+            settlement=settlement,)
 
         return redirect('/'+str(civilization_id)+'/')
     # Get all tiles without settlements
@@ -138,15 +136,12 @@ def new_exploration(request, civilization_id):
         tile = Tile.objects.get(id=tile_id)
         # calulate distance to closest settlment
         distance = calculate_distance_to_closest_settlement(tile, settlement_locations)
-        proj = Project.objects.create(
+        ExplorationProject._create_project(
             name="Exploring " + str(tile),
             needed=20*distance,
             last_spent=civilization.last_year_updated,
-            civilization=civilization)
-        ExplorationProject.objects.create(
-            territory=tile,
-            base_project=proj)
-        print(proj.__dict__)
+            civilization=civilization,
+            territory=tile,)
         
         return redirect('/'+str(civilization_id)+'/')
     # Get all the tiles around your tiles.

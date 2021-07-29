@@ -5,9 +5,13 @@ from disasters.disaster import next_disaster, move_disaster_along
 from controlpanel.technology import unlock_another_technology
 import random
 
+from projects.models import ProjectOption
+
 def spend_resources(civilization, year, resources_spent):
     # Todo log all of this.
     for resource_spent in resources_spent:
+        if not resource_spent["spent"] > 0:
+            continue
         if resource_spent["type"] == "maintance_tile":
             spend_resources_on_tile_maintance(
                 resource_spent["spent_on"],
@@ -21,11 +25,7 @@ def spend_resources(civilization, year, resources_spent):
                 civilization,
                 year)
         elif resource_spent["type"] == "project":
-            spend_resources_on_project(
-                resource_spent["spent_on"],
-                resource_spent["spent"],
-                civilization,
-                year)
+            resource_spent["spent_on"].spend(resource_spent["spent"])
 
 def spend_resources_on_tile_maintance(tile, spent, civilization, year):
     tile.last_year_updated = year
@@ -43,35 +43,6 @@ def spend_resources_on_tech_maintance(tech, spent, civilization, year):
         tech.maintaned = True
         tech.active = True
     tech.save()
-
-def spend_resources_on_project(project, spent, civilization, year):
-    # Todo split this up
-    if not spent > 0:
-        return
-    project.last_spent = year
-    if project.is_research():
-        project.spent += spent
-        project.save()
-        chance = random.randrange(1,101)
-        if project.spent >= chance:
-            unlock_another_technology(civilization)
-            project.delete()
-            pass
-    if project.is_exploration():
-        project.spent += spent
-        project.save()
-        if project.spent >= project.needed:
-            project.territory.controler = civilization
-            project.territory.last_year_updated = year
-            project.territory.maintaned = True
-            project.territory.save()
-            project.delete()
-    if project.is_building_settlement():
-        project.spent += spent
-        project.save()
-        if project.spent >= project.needed:
-            migrate_initial_population_to_new_settlement(project.building)
-            project.delete()
 
 def advance_civilization_a_season(civilization):
 
