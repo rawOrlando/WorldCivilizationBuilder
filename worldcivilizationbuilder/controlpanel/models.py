@@ -195,61 +195,6 @@ class Settlement(models.Model):
             return True
         return False
 
-class Project(models.Model):
-    # Claiming land, building settlements, and researching technology
-    name = models.CharField(max_length=100)
-    spent = models.IntegerField(default=0)
-    # Last time resources were spent on this project.
-    last_spent = models.FloatField()
-    needed = models.IntegerField(null=True, blank=True, default=None)
-    civilization = models.ForeignKey(
-        Civilization,
-        related_name="projects",
-        on_delete=models.CASCADE,
-        )
-
-    # Only one of these 3 should not be null
-    building = models.ForeignKey(
-        Settlement,
-        null=True,
-        default=None,
-        blank=True,
-        related_name="projects",
-        on_delete=models.CASCADE,
-        )
-    territory = models.ForeignKey(
-        Tile,
-        null=True,
-        default=None,
-        blank=True,
-        related_name="projects",
-        on_delete=models.CASCADE,
-        )
-    # Todo figure out how tecnology will be done.
-    tecnology = models.CharField(
-        max_length=100,
-        null=True,
-        default=None,
-        blank=True,)
-
-    def delete(self, *args, **kwargs):
-        if self.building and self.needed and not self.spent >= self.needed:
-            self.building.delete()
-        super(Project, self).delete(*args, **kwargs)
-
-    def is_research(self):
-        return self.tecnology and self.territory is None and self.building is None
-
-    def is_exploration(self):
-        return self.territory and not self.tecnology and self.building is None
-
-    def is_building_settlement(self):
-        return self.building and self.territory is None and not self.tecnology
-
-    def __str__(self):
-        return "{name}: ({owner})".format(
-            name=self.name, owner=self.civilization.name)
-
 class Technology(models.Model):
     BONE_TOOLS_NAME = "Bone Tools"
     FIRE_NAME = "Fire"
