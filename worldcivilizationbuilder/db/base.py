@@ -14,60 +14,54 @@ class Base_DB_Model():
             setattr(self, attribute, value)
 
     @classmethod
-    def get(cls, _id, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
+    def get(cls, _id):
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
 
-        query = Query()
-        values = table.get((query.id == _id))
+            query = Query()
+            values = table.get((query.id == _id))
 
-        if values:
-            got = cls()
-            attr_dict = values
-            for key in attr_dict:
-                setattr(got, key, attr_dict[key])
-            return got
-        else:
-            return None
+            if values:
+                got = cls()
+                attr_dict = values
+                for key in attr_dict:
+                    setattr(got, key, attr_dict[key])
+                return got
+            else:
+                return None
 
-    def save(self, db=None):
-        if not db:
-            db = get_db()
-        table = db.table(self.TABLE_NAME)
-        table.update(self.__dict__)
+    def save(self):
+        with get_db() as db:
+            table = db.table(self.TABLE_NAME)
+            table.update(self.__dict__)
 
-    def delete(self, db=None):
-        if not db:
-            db = get_db()
-        table = db.table(self.TABLE_NAME)
-        print(self.__dict__)
-        query = Query()
-        table.remove((query.id == self.id))
+    def delete(self): 
+        with get_db() as db:
+            table = db.table(self.TABLE_NAME)
+            query = Query()
+            table.remove((query.id == self.id))
 
     # to do make a general filter method
     @classmethod
-    def filter(cls, query, db=None):
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
-        values_list = table.search(query)
-        _result = []
-        for values in values_list:
-            _result.append(cls.create_from_values(values))
-        return _result
+    def filter(cls, query):
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
+            values_list = table.search(query)
+            _result = []
+            for values in values_list:
+                _result.append(cls.create_from_values(values))
+            return _result
 
     # to do make a all method
     @classmethod
-    def all(cls, db=None):
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
-        values_list = table.all()
-        _all = []
-        for values in values_list:
-            _all.append(cls.create_from_values(values))
-        return _all
+    def all(cls):
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
+            values_list = table.all()
+            _all = []
+            for values in values_list:
+                _all.append(cls.create_from_values(values))
+            return _all
 
 
     @classmethod

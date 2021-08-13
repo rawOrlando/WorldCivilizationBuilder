@@ -19,37 +19,35 @@ class Disaster(Base_DB_Model):
 
     @staticmethod
     def create(name,
-               level=1, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Disaster.TABLE_NAME)
+               level=1):
+        with get_db() as db:
+            table = db.table(Disaster.TABLE_NAME)
 
-        disaster = Disaster()
-        disaster.name = name
-        disaster.level = level
-        disaster._set_deafualts()
-        table.insert(disaster.__dict__)
-        return disaster
+            disaster = Disaster()
+            disaster.name = name
+            disaster.level = level
+            disaster._set_deafualts()
+            table.insert(disaster.__dict__)
+            return disaster
 
     @classmethod
-    def get(cls, _id=None, name=None, db=None,):
+    def get(cls, _id=None, name=None,):
         if not _id is None:
             return super(Disaster, cls).get(_id=_id, db=db)
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
 
-        query = Query()
-        values = table.get((query.name == name))
+            query = Query()
+            values = table.get((query.name == name))
 
-        if values:
-            got = cls()
-            attr_dict = values
-            for key in attr_dict:
-                setattr(got, key, attr_dict[key])
-            return got
-        else:
-            return None
+            if values:
+                got = cls()
+                attr_dict = values
+                for key in attr_dict:
+                    setattr(got, key, attr_dict[key])
+                return got
+            else:
+                return None
 
     def __str__(self):
         return self.name

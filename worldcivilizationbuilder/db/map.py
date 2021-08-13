@@ -10,7 +10,7 @@ class Tile(Base_DB_Model):
         y                       int
         z                       int
         controler_id            uuid
-        resources               list
+        resources               list str
 
     """
     TABLE_NAME = 'tile'
@@ -31,34 +31,32 @@ class Tile(Base_DB_Model):
 
     @staticmethod
     def create(x, y, z, 
-               controler_id=None, resources=[], db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Tile.TABLE_NAME)
+               controler_id=None, resources=[],):
+        with get_db() as db:
+            table = db.table(Tile.TABLE_NAME)
 
-        # todo enforce unique x, y, z  ??
+            # todo enforce unique x, y, z  ??
 
-        tile = Tile()
-        tile.x = x
-        tile.y = y
-        tile.z = z
-        tile.controler_id = controler_id
-        tile.resources = resources
-        tile._set_defaults()
-        table.insert(tile.__dict__)
-        return tile
+            tile = Tile()
+            tile.x = x
+            tile.y = y
+            tile.z = z
+            tile.controler_id = controler_id
+            tile.resources = resources
+            tile._set_defaults()
+            table.insert(tile.__dict__)
+            return tile
 
     @staticmethod
-    def get_or_create(x, y, z,db=None,):
-        if not db:
-            db = get_db()
-        # Get 
-        tile = Tile.get(x=x, y=y, z=z, db=db)
-        if tile is None:
-            # Create
-            tile = Tile.create(x=x, y=y, z=z, db=db)
+    def get_or_create(x, y, z,):
+        with get_db() as db:
+            # Get 
+            tile = Tile.get(x=x, y=y, z=z, db=db)
+            if tile is None:
+                # Create
+                tile = Tile.create(x=x, y=y, z=z, db=db)
 
-        return tile
+            return tile
 
     @classmethod
     def get(cls, _id=None, x=None, y=None, z=None, db=None,):
