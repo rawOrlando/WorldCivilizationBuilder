@@ -1,2 +1,4 @@
-django-bootstrap3==11.1.0
+django==3.2.5
+django-bootstrap3==15.0.0
+
 tinydb==4.5.1
