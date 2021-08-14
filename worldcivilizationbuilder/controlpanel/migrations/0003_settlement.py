@@ -7,18 +7,40 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0002_add_tile_asset'),
+        ("controlpanel", "0002_add_tile_asset"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Settlement',
+            name="Settlement",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('population', models.IntegerField()),
-                ('civilization', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='settlements', to='controlpanel.civilization')),
-                ('location', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='settlements', to='controlpanel.tile')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("population", models.IntegerField()),
+                (
+                    "civilization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="settlements",
+                        to="controlpanel.civilization",
+                    ),
+                ),
+                (
+                    "location",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="settlements",
+                        to="controlpanel.tile",
+                    ),
+                ),
             ],
         ),
     ]

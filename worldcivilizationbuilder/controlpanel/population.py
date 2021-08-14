@@ -1,5 +1,3 @@
-
-
 def get_population_limit(settlement):
     return 20
 
@@ -10,12 +8,14 @@ def migrate_initial_population_to_new_settlement(new_settlement):
     (close): connected and under 4 tiles away
     (connected): all tiles stepped on to get here owned by this civiliztion
     """
-    for other_settlement in new_settlement.civilization.settlements.exclude(id=new_settlement.id):
+    for other_settlement in new_settlement.civilization.settlements.exclude(
+        id=new_settlement.id
+    ):
         # Todo order thes settlements in some way that make sences, distance, population
         if _is_close(new_settlement, other_settlement):
             possible_moving_population = other_settlement.population // 3
             # Move people
-            while possible_moving_population > 0: 
+            while possible_moving_population > 0:
                 # move 1 person at a time inbetween settlements
                 new_settlement.population += 1
                 other_settlement.population -= 1
@@ -26,8 +26,6 @@ def migrate_initial_population_to_new_settlement(new_settlement):
                     return
             other_settlement.save()
         new_settlement.save()
-
-
 
 
 def _is_close(new_settlement, other_settlements):

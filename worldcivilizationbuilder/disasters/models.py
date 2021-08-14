@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class Disaster(models.Model):
     name = models.CharField(max_length=100)
     level = models.IntegerField()
@@ -29,12 +28,13 @@ class Disaster(models.Model):
     def UNTIMELY_DEATH():
         return Disaster.objects.get(name="Untimely Death")
 
+
 class CurrentDisaster(models.Model):
     civilization = models.ForeignKey(
         "controlpanel.Civilization",
         on_delete=models.CASCADE,
-        related_name="current_disasters"
-        )
+        related_name="current_disasters",
+    )
     disaster = models.ForeignKey("Disaster", on_delete=models.CASCADE)
 
     # The period of time for the disaster

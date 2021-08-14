@@ -7,28 +7,56 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0011_alter_tile_controler'),
+        ("controlpanel", "0011_alter_tile_controler"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Technology',
+            name="Technology",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('tec_type', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("tec_type", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='CivTec',
+            name="CivTec",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_year_maintance_applied', models.FloatField(default=0)),
-                ('maintance_spent_already', models.IntegerField(default=0)),
-                ('needed_maintance', models.IntegerField()),
-                ('maintaned', models.BooleanField(default=False)),
-                ('civilization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='controlpanel.civilization')),
-                ('technology', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='controlpanel.technology')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("last_year_maintance_applied", models.FloatField(default=0)),
+                ("maintance_spent_already", models.IntegerField(default=0)),
+                ("needed_maintance", models.IntegerField()),
+                ("maintaned", models.BooleanField(default=False)),
+                (
+                    "civilization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="controlpanel.civilization",
+                    ),
+                ),
+                (
+                    "technology",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="controlpanel.technology",
+                    ),
+                ),
             ],
         ),
     ]

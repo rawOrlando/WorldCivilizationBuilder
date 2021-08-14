@@ -1,8 +1,11 @@
 from db.base import Base_DB_Model, get_db
-#from db.projects import Project
+from tinydb import Query
+
+# from db.projects import Project
+
 
 class Civilization(Base_DB_Model):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -10,7 +13,8 @@ class Civilization(Base_DB_Model):
         technologies_ids        list uuid to civtec
 
     """
-    TABLE_NAME = 'civilization'
+
+    TABLE_NAME = "civilization"
 
     def __str__(self):
         return self.name
@@ -20,7 +24,6 @@ class Civilization(Base_DB_Model):
         self._set_default("last_year_updated", 0)
         self._set_default("technologies_ids", [])
         super(Civilization, self)._set_defaults()
-
 
     @staticmethod
     def create(name, last_year_updated=0):
@@ -36,12 +39,14 @@ class Civilization(Base_DB_Model):
 
     def territories(self):
         from db.map import Tile
+
         return Tile.filter((Query().controler_id == self.id))
 
     def technologies(self):
         # todo utilize technologies_ids
         from db.technology import CivTec
-        return CivTec.filter((query.civilization_id == self.id))
+
+        return CivTec.filter((Query().civilization_id == self.id))
 
     def settlements(self):
         return Settlement.filter((Query().civilization_id == self.id))
@@ -52,30 +57,45 @@ class Civilization(Base_DB_Model):
 
     def can_hunt(self):
         from db.technology import Technology
-        return (self.has_technology(Technology.BONE_TOOLS_NAME) or
-            self.has_technology(Technology.SLINGS_NAME))
+
+        return self.has_technology(Technology.BONE_TOOLS_NAME) or self.has_technology(
+            Technology.SLINGS_NAME
+        )
 
     def can_spear_fish(self):
         from db.technology import Technology
+
         return self.has_technology(Technology.BONE_TOOLS_NAME)
 
     def has_technology(self, technology_name):
         # todo maybe we could short circuit this.
         # todo split this to muliple lines
-        return bool([civtec for civtec in self.technologies if civtec.active and civtec.technology.name == technology_name])
+        return bool(
+            [
+                civtec
+                for civtec in self.technologies
+                if civtec.active and civtec.technology.name == technology_name
+            ]
+        )
 
     def has_technology_knowledge(self, technology_name):
         # todo maybe we could short circuit this.
         # todo split this to muliple lines
-        return bool([civtec for civtec in self.technologies if civtec.active and civtec.technology.name == technology_name])
+        return bool(
+            [
+                civtec
+                for civtec in self.technologies
+                if civtec.active and civtec.technology.name == technology_name
+            ]
+        )
 
     def possible_exploration_tiles(self):
-        pass 
+        pass
         # todo
 
 
 class Settlement(Base_DB_Model):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -85,7 +105,8 @@ class Settlement(Base_DB_Model):
         location_id             uuid
 
     """
-    TABLE_NAME = 'settlement'
+
+    TABLE_NAME = "settlement"
 
     # default values
     def _set_defaults(self):
@@ -93,10 +114,8 @@ class Settlement(Base_DB_Model):
         self._set_default("population", 0)
         super(Settlement, self)._set_defaults()
 
-
     @staticmethod
-    def create(name, civilization_id, location_id,
-               population=0, is_capital=False):
+    def create(name, civilization_id, location_id, population=0, is_capital=False):
         with get_db() as db:
             table = db.table(Settlement.TABLE_NAME)
 
@@ -113,9 +132,7 @@ class Settlement(Base_DB_Model):
     def civilization(self):
         return Civilization.get(self.civilization_id)
 
-    def location(self): 
+    def location(self):
         from db.map import Tile
+
         return Tile.get(self.location_id)
-
-
-

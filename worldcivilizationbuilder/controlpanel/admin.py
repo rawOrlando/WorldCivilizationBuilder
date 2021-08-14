@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from controlpanel.models import (
-	Civilization, 
-	CivTec,
-	Settlement, 
-	Tile,
-	Technology)
+from controlpanel.models import Civilization, CivTec, Settlement, Tile, Technology
 
 admin.site.register(Civilization)
 admin.site.register(CivTec)

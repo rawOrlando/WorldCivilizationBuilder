@@ -6,12 +6,14 @@ from controlpanel.technology import unlock_another_technology
 
 import random
 
+
 class ProjectOption(models.IntegerChoices):
     research = (1, "Research Project")
     exploration = (2, "Exploration Project")
-    settlement =(3, "Found Settlement Project")
+    settlement = (3, "Found Settlement Project")
     region_maintance = (4, "Region Maintance")
     technology_maintance = (5, "Technology Maintance")
+
 
 class Project(models.Model):
     # Claiming land, building settlements, and researching technology
@@ -24,7 +26,7 @@ class Project(models.Model):
         Civilization,
         related_name="projects",
         on_delete=models.CASCADE,
-        )
+    )
 
     project_type = models.IntegerField(choices=ProjectOption.choices)
     specific_project_id = models.IntegerField()
@@ -65,10 +67,8 @@ class Project(models.Model):
             return self.specfic_project._is_complete()
         return self.spent >= self.needed
 
-
     def __str__(self):
-        return "{name}: ({owner})".format(
-            name=self.name, owner=self.civilization.name)
+        return "{name}: ({owner})".format(name=self.name, owner=self.civilization.name)
 
 
 class SpecficProject(models.Model):
@@ -76,6 +76,7 @@ class SpecficProject(models.Model):
     This is some stuff for all  general the specfic project models
     to simply to the the relation ship
     """
+
     # type should be set in base class
     TYPE = None
 
@@ -83,10 +84,10 @@ class SpecficProject(models.Model):
         Project,
         null=True,
         default=None,
-        #unique=True,
+        # unique=True,
         blank=True,
         on_delete=models.CASCADE,
-        )
+    )
 
     class Meta:
         abstract = True
@@ -97,11 +98,12 @@ class SpecficProject(models.Model):
             return self.base_project.civilization
         if item in self.base_project.__dict__:
             return self.base_project.__dict__[item]
-        raise AttributeError("%r object has no attribute %r" %
-                             (self.__class__.__name__, item))
+        raise AttributeError(
+            "%r object has no attribute %r" % (self.__class__.__name__, item)
+        )
 
     @classmethod
-    def _create_project(cls, name, last_spent, civilization, needed = None, **kwargs):
+    def _create_project(cls, name, last_spent, civilization, needed=None, **kwargs):
 
         spec_proj = cls.objects.create(**kwargs)
 
@@ -112,8 +114,9 @@ class SpecficProject(models.Model):
             needed=needed,
             last_spent=last_spent,
             civilization=civilization,
-            project_type = spec_proj.TYPE,
-            specific_project_id = spec_proj.id,)
+            project_type=spec_proj.TYPE,
+            specific_project_id=spec_proj.id,
+        )
 
         spec_proj.save()
 
@@ -122,13 +125,14 @@ class SpecficProject(models.Model):
 
 
 class ResearchProject(SpecficProject):
-    TYPE = ProjectOption.research 
+    TYPE = ProjectOption.research
 
     technology_type = models.CharField(
-        max_length=100,)
+        max_length=100,
+    )
 
     def _is_complete(self):
-        chance = random.randrange(1,101)
+        chance = random.randrange(1, 101)
         return self.base_project.spent >= chance
 
     def _complete(self):
@@ -142,13 +146,13 @@ class ExplorationProject(SpecficProject):
         Tile,
         related_name="projects",
         on_delete=models.CASCADE,
-        )
+    )
 
     def _complete(self):
         self.territory.controler = self.civilization
         self.territory.last_year_updated = self.civilization.last_year_updated
         self.territory.maintaned = True
-        self.territory.save() 
+        self.territory.save()
 
 
 class SettlementProject(SpecficProject):
@@ -158,7 +162,7 @@ class SettlementProject(SpecficProject):
         Settlement,
         related_name="projects",
         on_delete=models.CASCADE,
-        )
+    )
 
     def delete(self, *args, **kwargs):
         if not self.base_project._is_complete():
@@ -198,7 +202,7 @@ class TileMaintanceProject(Maintance, SpecficProject):
         Tile,
         related_name="maintance_project",
         on_delete=models.CASCADE,
-        )
+    )
 
 
 class TechnologyMaintanceProject(Maintance, SpecficProject):
@@ -208,10 +212,9 @@ class TechnologyMaintanceProject(Maintance, SpecficProject):
         Technology,
         related_name="maintance_project",
         on_delete=models.CASCADE,
-        )
+    )
+
     @property
     def needed(self):
         # is there a better way to override the value of needed for conect Project value
         self.technology.needed_maintance
-
-
