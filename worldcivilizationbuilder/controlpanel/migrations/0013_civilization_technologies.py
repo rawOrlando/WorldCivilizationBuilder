@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0012_civtec_technology'),
+        ("controlpanel", "0012_civtec_technology"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='civilization',
-            name='technologies',
-            field=models.ManyToManyField(through='controlpanel.CivTec', to='controlpanel.Technology'),
+            model_name="civilization",
+            name="technologies",
+            field=models.ManyToManyField(
+                through="controlpanel.CivTec", to="controlpanel.Technology"
+            ),
         ),
     ]

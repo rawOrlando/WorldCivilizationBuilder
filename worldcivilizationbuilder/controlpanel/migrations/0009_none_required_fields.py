@@ -7,33 +7,51 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0008_project'),
+        ("controlpanel", "0008_project"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='project',
-            name='building',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='controlpanel.settlement'),
+            model_name="project",
+            name="building",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="projects",
+                to="controlpanel.settlement",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='civilization',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='controlpanel.civilization'),
+            model_name="project",
+            name="civilization",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="projects",
+                to="controlpanel.civilization",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='needed',
+            model_name="project",
+            name="needed",
             field=models.IntegerField(blank=True, default=None, null=True),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='tecnology',
+            model_name="project",
+            name="tecnology",
             field=models.CharField(blank=True, default=None, max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='territory',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='controlpanel.tile'),
+            model_name="project",
+            name="territory",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="projects",
+                to="controlpanel.tile",
+            ),
         ),
     ]

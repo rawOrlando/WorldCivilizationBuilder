@@ -1,11 +1,14 @@
 from controlpanel.costs import calculate_maintance_cost_for_tile
-from controlpanel.population import (get_population_limit,
-    migrate_initial_population_to_new_settlement)
+from controlpanel.population import (
+    get_population_limit,
+    migrate_initial_population_to_new_settlement,
+)
 from disasters.disaster import next_disaster, move_disaster_along
 from controlpanel.technology import unlock_another_technology
 import random
 
 from projects.models import ProjectOption
+
 
 def spend_resources(civilization, year, resources_spent):
     # Todo log all of this.
@@ -14,18 +17,15 @@ def spend_resources(civilization, year, resources_spent):
             continue
         if resource_spent["type"] == "maintance_tile":
             spend_resources_on_tile_maintance(
-                resource_spent["spent_on"],
-                resource_spent["spent"],
-                civilization,
-                year)
+                resource_spent["spent_on"], resource_spent["spent"], civilization, year
+            )
         elif resource_spent["type"] == "maintance_tech":
             spend_resources_on_tech_maintance(
-                resource_spent["spent_on"],
-                resource_spent["spent"],
-                civilization,
-                year)
+                resource_spent["spent_on"], resource_spent["spent"], civilization, year
+            )
         elif resource_spent["type"] == "project":
             resource_spent["spent_on"].spend(resource_spent["spent"])
+
 
 def spend_resources_on_tile_maintance(tile, spent, civilization, year):
     tile.last_year_updated = year
@@ -36,6 +36,7 @@ def spend_resources_on_tile_maintance(tile, spent, civilization, year):
         tile.maintaned = True
     tile.save()
 
+
 def spend_resources_on_tech_maintance(tech, spent, civilization, year):
     tech.last_year_maintance_applied = year
     tech.maintance_spent_already += spent
@@ -44,13 +45,13 @@ def spend_resources_on_tech_maintance(tech, spent, civilization, year):
         tech.active = True
     tech.save()
 
+
 def advance_civilization_a_season(civilization):
 
     new_time = 0.25 + civilization.last_year_updated
     civilization.last_year_updated = new_time
 
-
-    # if new year 
+    # if new year
     if new_time % 1 == 0.0:
         # Generate next disaster
         next_disaster(new_time, civilization)
@@ -59,7 +60,7 @@ def advance_civilization_a_season(civilization):
     for disaster in civilization.current_disasters.all():
         move_disaster_along(disaster, new_time)
 
-    # if new year 
+    # if new year
     if new_time % 1 == 0.0:
         # Check to see if disaster repeated an escalates
         # Todo
@@ -70,7 +71,7 @@ def advance_civilization_a_season(civilization):
                 tile.controler = None
             tile.reset_maintance()
 
-            tile.save() 
+            tile.save()
 
         for tech in civilization.civtec.all():
             if tech.needed_maintance:
@@ -89,20 +90,21 @@ def advance_civilization_a_season(civilization):
 
 def decay_unattended_projects(civilization):
     for project in civilization.projects.all():
-        decay = int(civilization.last_year_updated) - int(project.last_spent) 
+        decay = int(civilization.last_year_updated) - int(project.last_spent)
         if decay > 0:
             if project.spent <= 0:
                 project.delete()
             else:
-                project.spent -= decay**2
+                project.spent -= decay ** 2
                 project.save()
+
 
 def repopulate(civilization):
     for settlement in civilization.settlements.all():
         if settlement.population >= get_population_limit(settlement):
             continue
         for i in range(0, (settlement.population // 10) + 1):
-            chance = random.randrange(1,101)
+            chance = random.randrange(1, 101)
             if chance <= 10:
                 settlement.population += 1
                 settlement.save()

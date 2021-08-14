@@ -8,24 +8,47 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Civilization',
+            name="Civilization",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Tile',
+            name="Tile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('colum', models.IntegerField()),
-                ('row', models.IntegerField()),
-                ('controler', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tiles', to='controlpanel.civilization')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("colum", models.IntegerField()),
+                ("row", models.IntegerField()),
+                (
+                    "controler",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="tiles",
+                        to="controlpanel.civilization",
+                    ),
+                ),
             ],
         ),
     ]

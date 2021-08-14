@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0005_switch_cordinate_system'),
+        ("controlpanel", "0005_switch_cordinate_system"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='civilization',
-            name='last_year_updated',
+            model_name="civilization",
+            name="last_year_updated",
             field=models.FloatField(default=0),
             preserve_default=False,
         ),

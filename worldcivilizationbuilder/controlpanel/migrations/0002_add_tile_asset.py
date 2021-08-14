@@ -6,58 +6,58 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0001_initial'),
+        ("controlpanel", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tile',
-            name='desert',
+            model_name="tile",
+            name="desert",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='forest',
+            model_name="tile",
+            name="forest",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='hills',
+            model_name="tile",
+            name="hills",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='lake',
+            model_name="tile",
+            name="lake",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='mountain',
+            model_name="tile",
+            name="mountain",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='plains',
+            model_name="tile",
+            name="plains",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='river',
+            model_name="tile",
+            name="river",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='shore',
+            model_name="tile",
+            name="shore",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='snowy',
+            model_name="tile",
+            name="snowy",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='tropical_forest',
+            model_name="tile",
+            name="tropical_forest",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0003_settlement'),
+        ("controlpanel", "0003_settlement"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='settlement',
-            name='is_capital',
+            model_name="settlement",
+            name="is_capital",
             field=models.BooleanField(default=False),
         ),
     ]

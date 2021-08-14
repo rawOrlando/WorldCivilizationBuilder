@@ -7,13 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0016_tile_ocean'),
+        ("controlpanel", "0016_tile_ocean"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='technology',
-            name='prerequisite',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='unlocks', to='controlpanel.technology'),
+            model_name="technology",
+            name="prerequisite",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="unlocks",
+                to="controlpanel.technology",
+            ),
         ),
     ]

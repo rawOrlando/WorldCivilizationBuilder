@@ -7,13 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0010_tile_maintance'),
+        ("controlpanel", "0010_tile_maintance"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tile',
-            name='controler',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tiles', to='controlpanel.civilization'),
+            model_name="tile",
+            name="controler",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="tiles",
+                to="controlpanel.civilization",
+            ),
         ),
     ]

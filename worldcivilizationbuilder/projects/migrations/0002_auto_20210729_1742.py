@@ -7,33 +7,63 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0001_initial'),
+        ("projects", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='explorationproject',
-            name='base_project',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+            model_name="explorationproject",
+            name="base_project",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="projects.project",
+            ),
         ),
         migrations.AlterField(
-            model_name='researchproject',
-            name='base_project',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+            model_name="researchproject",
+            name="base_project",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="projects.project",
+            ),
         ),
         migrations.AlterField(
-            model_name='settlementproject',
-            name='base_project',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+            model_name="settlementproject",
+            name="base_project",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="projects.project",
+            ),
         ),
         migrations.AlterField(
-            model_name='technologymaintanceproject',
-            name='base_project',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+            model_name="technologymaintanceproject",
+            name="base_project",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="projects.project",
+            ),
         ),
         migrations.AlterField(
-            model_name='tilemaintanceproject',
-            name='base_project',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+            model_name="tilemaintanceproject",
+            name="base_project",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="projects.project",
+            ),
         ),
     ]

@@ -6,16 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0018_move_needed_maintance'),
+        ("controlpanel", "0018_move_needed_maintance"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='technology',
-            name='needed_maintance',
+            model_name="technology",
+            name="needed_maintance",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.DeleteModel(
-            name='Project',
+            name="Project",
         ),
     ]

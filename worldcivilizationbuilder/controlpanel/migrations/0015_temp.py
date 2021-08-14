@@ -7,23 +7,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0014_technology_description'),
+        ("controlpanel", "0014_technology_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='civtec',
-            name='active',
+            model_name="civtec",
+            name="active",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='civtec',
-            name='civilization',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='civtec', to='controlpanel.civilization'),
+            model_name="civtec",
+            name="civilization",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="civtec",
+                to="controlpanel.civilization",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='spent',
+            model_name="project",
+            name="spent",
             field=models.IntegerField(default=0),
         ),
     ]

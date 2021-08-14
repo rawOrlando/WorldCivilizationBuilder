@@ -9,26 +9,54 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('controlpanel', '0013_civilization_technologies'),
+        ("controlpanel", "0013_civilization_technologies"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Disaster',
+            name="Disaster",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('level', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("level", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='CurrentDisaster',
+            name="CurrentDisaster",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_time', models.FloatField()),
-                ('end_time', models.FloatField()),
-                ('civilization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='controlpanel.civilization')),
-                ('disaster', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='disasters.disaster')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start_time", models.FloatField()),
+                ("end_time", models.FloatField()),
+                (
+                    "civilization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="controlpanel.civilization",
+                    ),
+                ),
+                (
+                    "disaster",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="disasters.disaster",
+                    ),
+                ),
             ],
         ),
     ]

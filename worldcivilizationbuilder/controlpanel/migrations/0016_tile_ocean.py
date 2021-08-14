@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0015_temp'),
+        ("controlpanel", "0015_temp"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tile',
-            name='ocean',
+            model_name="tile",
+            name="ocean",
             field=models.BooleanField(default=False),
         ),
     ]

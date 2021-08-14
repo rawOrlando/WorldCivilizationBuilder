@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0004_settlement_is_capital'),
+        ("controlpanel", "0004_settlement_is_capital"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='tile',
-            old_name='colum',
-            new_name='x',
+            model_name="tile",
+            old_name="colum",
+            new_name="x",
         ),
         migrations.RenameField(
-            model_name='tile',
-            old_name='row',
-            new_name='y',
+            model_name="tile",
+            old_name="row",
+            new_name="y",
         ),
         migrations.AddField(
-            model_name='tile',
-            name='z',
+            model_name="tile",
+            name="z",
             field=models.IntegerField(default=0),
             preserve_default=False,
         ),

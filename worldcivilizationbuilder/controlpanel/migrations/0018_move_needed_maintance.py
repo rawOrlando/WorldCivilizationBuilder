@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0017_technology_prerequisite'),
+        ("controlpanel", "0017_technology_prerequisite"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='civtec',
-            name='needed_maintance',
+            model_name="civtec",
+            name="needed_maintance",
         ),
         migrations.AddField(
-            model_name='technology',
-            name='needed_maintance',
+            model_name="technology",
+            name="needed_maintance",
             field=models.IntegerField(null=True),
         ),
     ]

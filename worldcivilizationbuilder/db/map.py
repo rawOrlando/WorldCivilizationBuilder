@@ -2,8 +2,9 @@ from tinydb import Query
 from db.base import Base_DB_Model
 from db.helper import Dict2Class, get_db
 
+
 class Tile(Base_DB_Model):
-    """ 
+    """
     Fields:
         id                      uuid
         x                       int
@@ -13,10 +14,11 @@ class Tile(Base_DB_Model):
         resources               list str
 
     """
-    TABLE_NAME = 'tile'
+
+    TABLE_NAME = "tile"
     # https://www.redblobgames.com/grids/hexagons/#coordinates
     # x + y + z = 0
-    # North(+y,-z) to South(-y,+z), 
+    # North(+y,-z) to South(-y,+z),
     # should have x as an int
     # North East(+x,-z) to South West(-x,+z)
     # should have y as an int
@@ -30,8 +32,13 @@ class Tile(Base_DB_Model):
         super(Tile, self)._set_defaults()
 
     @staticmethod
-    def create(x, y, z, 
-               controler_id=None, resources=[],):
+    def create(
+        x,
+        y,
+        z,
+        controler_id=None,
+        resources=[],
+    ):
         with get_db() as db:
             table = db.table(Tile.TABLE_NAME)
 
@@ -48,9 +55,13 @@ class Tile(Base_DB_Model):
             return tile
 
     @staticmethod
-    def get_or_create(x, y, z,):
+    def get_or_create(
+        x,
+        y,
+        z,
+    ):
         with get_db() as db:
-            # Get 
+            # Get
             tile = Tile.get(x=x, y=y, z=z, db=db)
             if tile is None:
                 # Create
@@ -59,8 +70,15 @@ class Tile(Base_DB_Model):
             return tile
 
     @classmethod
-    def get(cls, _id=None, x=None, y=None, z=None, db=None,):
-        if not _id is None:
+    def get(
+        cls,
+        _id=None,
+        x=None,
+        y=None,
+        z=None,
+        db=None,
+    ):
+        if _id is not None:
             return super(Tile, cls).get(_id=_id, db=db)
         if not db:
             db = get_db()
@@ -79,22 +97,20 @@ class Tile(Base_DB_Model):
         else:
             return None
 
-
     def __str__(self):
         controler = self.controler
-        if controler  is None:
+        if controler is None:
             owner = "Unoccupied"
         else:
             owner = controler.name
 
         return "{owner}: ({x}, {y}, {z})".format(
-            owner=owner, x=self.x, y=self.y, z=self.z)
+            owner=owner, x=self.x, y=self.y, z=self.z
+        )
 
     def controler(self):
         if not self.controler_id:
             return None
         from db.civilization import Civilization
+
         return Civilization.get(self.controler_id)
-
-
-

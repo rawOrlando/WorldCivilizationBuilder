@@ -1,5 +1,10 @@
 from django.contrib import admin
-from projects.models import Project, ResearchProject, ExplorationProject, SettlementProject
+from projects.models import (
+    Project,
+    ResearchProject,
+    ExplorationProject,
+    SettlementProject,
+)
 
 admin.site.register(Project)
 admin.site.register(ResearchProject)

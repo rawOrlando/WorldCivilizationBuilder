@@ -1,6 +1,7 @@
 import unittest
 from db.civilization import Civilization, Settlement
 
+
 class TestCivilization(unittest.TestCase):
 
     # todo test should use a seperate DB.
@@ -44,8 +45,9 @@ class TestSettlement(unittest.TestCase):
     def test_creation_set_values(self):
         civ = Civilization.create(name="Temp civ")
         # todo add locations
-        settlement = Settlement.create(name = "place",
-            civilization_id=civ.id, location_id=None)
+        settlement = Settlement.create(
+            name="place", civilization_id=civ.id, location_id=None
+        )
 
         self.assertEqual(settlement.civilization_id, civ.id)
         self.assertEqual(settlement.location_id, None)
@@ -61,12 +63,12 @@ class TestSettlement(unittest.TestCase):
         civ.delete()
         settlement.delete()
 
-
     def test_get_created_settlement(self):
         civ = Civilization.create(name="Temp test")
         # todo add locations
-        settlement = Settlement.create(name = "place",
-            civilization_id=civ.id, location_id=None)
+        settlement = Settlement.create(
+            name="place", civilization_id=civ.id, location_id=None
+        )
         got_settlement = Settlement.get(_id=settlement.id)
 
         # check that they are the same.
@@ -81,5 +83,6 @@ class TestSettlement(unittest.TestCase):
         civ.delete()
         settlement.delete()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

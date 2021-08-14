@@ -4,8 +4,11 @@ from db.helper import Dict2Class, get_db
 from controlpanel.technology import unlock_another_technology
 from controlpanel.costs import calculate_maintance_cost_for_tile
 
+import random
+
+
 class Project(Base_DB_Model):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -15,18 +18,17 @@ class Project(Base_DB_Model):
         civilization_id         uuid
 
     """
-    TABLE_NAME = 'project'
+
+    TABLE_NAME = "project"
     ## abrstact class.
 
     # default values
     def _set_defaults(self):
         self._set_default("spent", 0)
-        super(Technology, self)._set_defaults()
-
+        super(Project, self)._set_defaults()
 
     @classmethod
-    def create(cls, name, current_year, needed, civilization_id,
-               spent=0):
+    def create(cls, name, current_year, needed, civilization_id, spent=0):
         project = cls()
         project.name = name
         project.last_spent = current_year
@@ -40,7 +42,7 @@ class Project(Base_DB_Model):
     def spend(self, amount):
         self.spent += amount
         current_year = self.civilization.last_year_updated
-        self.last_spent = current_year 
+        self.last_spent = current_year
 
         if self._is_complete():
             self._complete(current_year)
@@ -74,11 +76,11 @@ class Project(Base_DB_Model):
         return int(year - self.last_spent) > 0
 
     def _decay(self, year):
-        self.spent -= (year - self.last_spent)**2
+        self.spent -= (year - self.last_spent) ** 2
         self.save()
 
-    @staticmethod
-    def get(id):
+    @classmethod
+    def get(cls, _id):
         with get_db() as db:
             table = db.table(cls.TABLE_NAME)
 
@@ -99,11 +101,12 @@ class Project(Base_DB_Model):
 
     def civilization(self):
         from db.civilization import Civilization
+
         return Civilization.get(self.civilization_id)
 
 
 class ResearchProject(Project):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -115,16 +118,23 @@ class ResearchProject(Project):
 
     """
 
-
     @classmethod
-    def create(cls, name, current_year, civilization_id,
-               technology_type,):
+    def create(
+        cls,
+        name,
+        current_year,
+        civilization_id,
+        technology_type,
+    ):
         with get_db() as db:
             table = db.table(Project.TABLE_NAME)
 
-            project = super(ResearchProject, cls).create(name=name, current_year=current_year,
-                                                 civilization_id=civilization_id,
-                                                 table=table)
+            project = super(ResearchProject, cls).create(
+                name=name,
+                current_year=current_year,
+                civilization_id=civilization_id,
+                table=table,
+            )
             project.technology_type = technology_type
 
             project._set_deafualts()
@@ -132,7 +142,7 @@ class ResearchProject(Project):
             return project
 
     def _is_complete(self):
-        chance = random.randrange(1,101)
+        chance = random.randrange(1, 101)
         return self.spent >= chance
 
     def _complete(self, year):
@@ -140,14 +150,15 @@ class ResearchProject(Project):
         tech = unlock_another_technology(civilization)
 
         if tech.technology.needed_maintance:
-            TechnologyMaintanceProject.create(
+            TechnologyMaintenanceProject.create(
                 current_year=civilization.last_year_updated,
                 civilization_id=self.civilization.id,
-                civ_tech=tech,)
+                civ_tech=tech,
+            )
 
 
 class ExplorationProject(Project):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -158,15 +169,23 @@ class ExplorationProject(Project):
         territory_id            uuid
 
     """
+
     @classmethod
-    def create(cls, name, current_year, civilization_id,
-               territory_id,
-               ):
+    def create(
+        cls,
+        name,
+        current_year,
+        civilization_id,
+        territory_id,
+    ):
         with get_db() as db:
             table = db.table(Project.TABLE_NAME)
 
-            project = super(ExplorationProject, cls).create(name=name, current_year=current_year,
-                                                 civilization_id=civilization_id,)
+            project = super(ExplorationProject, cls).create(
+                name=name,
+                current_year=current_year,
+                civilization_id=civilization_id,
+            )
             project.territory_id = territory_id
 
             project._set_deafualts()
@@ -176,8 +195,8 @@ class ExplorationProject(Project):
     @property
     def territory(self):
         from db.map import Tile
-        return Tile.get(self.territory_id)
 
+        return Tile.get(self.territory_id)
 
     def _complete(self):
         territory = self.territory
@@ -187,12 +206,12 @@ class ExplorationProject(Project):
             current_year=self.civilization.last_year_updated,
             civilization_id=self.civilization_id,
             tile_id=self.territory_id,
-            )
-        territory.save() 
+        )
+        territory.save()
 
 
 class SettlementProject(Project):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -203,17 +222,26 @@ class SettlementProject(Project):
         settlement_id           uuid
 
     """
+
     @classmethod
-    def create(cls, name, current_year, civilization_id,
-               settlement_id,
-               db=None,):
+    def create(
+        cls,
+        name,
+        current_year,
+        civilization_id,
+        settlement_id,
+        db=None,
+    ):
         if not db:
             db = get_db()
         table = db.table(Project.TABLE_NAME)
 
-        project = super(SettlementProject, cls).create(name=name, current_year=current_year,
-                                             civilization_id=civilization_id,
-                                             table=table)
+        project = super(SettlementProject, cls).create(
+            name=name,
+            current_year=current_year,
+            civilization_id=civilization_id,
+            table=table,
+        )
         project.settlement_id = settlement_id
 
         project._set_deafualts()
@@ -223,16 +251,18 @@ class SettlementProject(Project):
     @property
     def settlement(self):
         from db.civilization import Settlement
+
         return Settlement.get(self.settlement_id)
-    
+
     def delete(self):
         if not self._is_complete():
             self.settlement.delete()
         super(SettlementProject, self).delete()
 
     def _complete(self):
+        pass
         # todo finish this thing.
-        migrate_initial_population_to_new_settlement(self.settlement)
+        # migrate_initial_population_to_new_settlement(self.settlement)
 
 
 class MaintenanceProject(Project):
@@ -243,16 +273,28 @@ class MaintenanceProject(Project):
     """
 
     @classmethod
-    def create(cls, name, current_year, needed, civilization_id,
-               maintenance_window=1.0, spent=0, db=None, table=None):
+    def create(
+        cls,
+        name,
+        current_year,
+        needed,
+        civilization_id,
+        maintenance_window=1.0,
+        spent=0,
+        db=None,
+        table=None,
+    ):
         if not table:
             if not db:
                 db = get_db()
             table = db.table(Project.TABLE_NAME)
 
-        project = super(MaintenanceProject, cls).create(name=name, current_year=current_year,
-                                             civilization_id=civilization_id,
-                                             table=table)
+        project = super(MaintenanceProject, cls).create(
+            name=name,
+            current_year=current_year,
+            civilization_id=civilization_id,
+            table=table,
+        )
         project.maintenance_window = maintenance_window
         project.last_maintained = current_year
 
@@ -272,7 +314,7 @@ class MaintenanceProject(Project):
 
 
 class TileMaintenanceProject(MaintenanceProject):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -287,20 +329,27 @@ class TileMaintenanceProject(MaintenanceProject):
     """
 
     @classmethod
-    def create(cls, current_year, civilization_id, tile_id,
-               name=None, db=None, table=None):
+    def create(
+        cls, current_year, civilization_id, tile_id, name=None, db=None, table=None
+    ):
         if not table:
             if not db:
                 db = get_db()
             table = db.table(Project.TABLE_NAME)
 
-        if not name:
-            name = "Tile Maintenace for" + str(self.tile)
+        # jank todo make better
+        from db.map import Tile
 
-        project = super(TileMaintanceProject, cls).create(
-            name=name, current_year=current_year,
+        tile = Tile.get(_id=tile_id)
+        if not name:
+            name = "Tile Maintenace for" + str(tile)
+
+        project = super(TileMaintenanceProject, cls).create(
+            name=name,
+            current_year=current_year,
             civilization_id=civilization_id,
-            table=table)
+            table=table,
+        )
         project.tile_id = tile_id
         table.insert(project.__dict__)
         return project
@@ -315,6 +364,7 @@ class TileMaintenanceProject(MaintenanceProject):
     @property
     def tile(self):
         from db.map import Tile
+
         return Tile.get(self.tile_id)
 
     @property
@@ -328,7 +378,7 @@ class TileMaintenanceProject(MaintenanceProject):
 
 
 class TechnologyMaintenanceProject(MaintenanceProject):
-    """ 
+    """
     Fields:
         id                      uuid
         name                    str
@@ -341,22 +391,26 @@ class TechnologyMaintenanceProject(MaintenanceProject):
         technology_id           uuid
             Points to civtec
     """
+
     @classmethod
-    def create(cls, current_year, civilization_id,
-               civ_tech, name=None, db=None, table=None):
+    def create(
+        cls, current_year, civilization_id, civ_tech, name=None, db=None, table=None
+    ):
         if not table:
             if not db:
                 db = get_db()
             table = db.table(Project.TABLE_NAME)
- 
+
         if not name:
-            name = "Maintaince for " + tech.technology.name,
+            name = ("Maintaince for " + civ_tech.technology.name,)
 
         project = super(TechnologyMaintenanceProject, cls).create(
-            name=name, current_year=current_year,
-            needed=civ_tech.needed_maintance, 
+            name=name,
+            current_year=current_year,
+            needed=civ_tech.needed_maintance,
             civilization_id=civilization_id,
-            table=table)
+            table=table,
+        )
         project.technology_id = civ_tech.id
         table.insert(project.__dict__)
         return project
@@ -371,12 +425,12 @@ class TechnologyMaintenanceProject(MaintenanceProject):
 
     def _complete(self, year):
         tec = self.technology
-        tec.active = True 
+        tec.active = True
         tec.save()
 
         self.reset_maintance(year)
 
     def technology(self):
         from db.technology import CivTec
-        return CivTec.get(self.technology_id)
 
+        return CivTec.get(self.technology_id)

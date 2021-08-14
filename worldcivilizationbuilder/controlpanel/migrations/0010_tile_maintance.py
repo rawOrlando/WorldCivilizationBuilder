@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0009_none_required_fields'),
+        ("controlpanel", "0009_none_required_fields"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tile',
-            name='last_year_updated',
+            model_name="tile",
+            name="last_year_updated",
             field=models.FloatField(default=0),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='maintance_spent_already',
+            model_name="tile",
+            name="maintance_spent_already",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='tile',
-            name='maintaned',
+            model_name="tile",
+            name="maintaned",
             field=models.BooleanField(default=False),
         ),
     ]

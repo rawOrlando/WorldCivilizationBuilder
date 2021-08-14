@@ -2,7 +2,8 @@ from tinydb import Query
 from db.helper import Dict2Class, get_db
 import uuid
 
-class Base_DB_Model():
+
+class Base_DB_Model:
     TABLE_NAME = None
 
     def _set_defaults(self):
@@ -35,7 +36,7 @@ class Base_DB_Model():
             table = db.table(self.TABLE_NAME)
             table.update(self.__dict__)
 
-    def delete(self): 
+    def delete(self):
         with get_db() as db:
             table = db.table(self.TABLE_NAME)
             query = Query()
@@ -62,7 +63,6 @@ class Base_DB_Model():
             for values in values_list:
                 _all.append(cls.create_from_values(values))
             return _all
-
 
     @classmethod
     def create_from_values(cls, dict_values):

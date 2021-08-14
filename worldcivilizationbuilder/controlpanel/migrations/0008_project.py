@@ -7,22 +7,53 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('controlpanel', '0007_alter_tile_unique_together'),
+        ("controlpanel", "0007_alter_tile_unique_together"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Project',
+            name="Project",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('spent', models.IntegerField()),
-                ('last_spent', models.FloatField()),
-                ('needed', models.IntegerField(null=True)),
-                ('tecnology', models.CharField(max_length=100, null=True)),
-                ('building', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='controlpanel.settlement')),
-                ('civilization', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='projects', to='controlpanel.civilization')),
-                ('territory', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='controlpanel.tile')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("spent", models.IntegerField()),
+                ("last_spent", models.FloatField()),
+                ("needed", models.IntegerField(null=True)),
+                ("tecnology", models.CharField(max_length=100, null=True)),
+                (
+                    "building",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="projects",
+                        to="controlpanel.settlement",
+                    ),
+                ),
+                (
+                    "civilization",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="projects",
+                        to="controlpanel.civilization",
+                    ),
+                ),
+                (
+                    "territory",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="projects",
+                        to="controlpanel.tile",
+                    ),
+                ),
             ],
         ),
     ]
