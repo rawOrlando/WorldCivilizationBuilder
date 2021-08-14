@@ -2,24 +2,25 @@ from tinydb import Query
 from db.base import Base_DB_Model
 from db.helper import Dict2Class, get_db
 
+
 class Disaster(Base_DB_Model):
-	""" 
+    """
     Fields:
-    	id 						uuid
+        id                      uuid
         name                    str
         level                   int
 
     """
-    TABLE_NAME = 'disaster'
+
+    TABLE_NAME = "disaster"
 
     # default values
     def _set_defaults(self):
         self._set_default("level", 1)
-        super(Technology, self)._set_defaults()
+        super(Disaster, self)._set_defaults()
 
     @staticmethod
-    def create(name,
-               level=1):
+    def create(name, level=1):
         with get_db() as db:
             table = db.table(Disaster.TABLE_NAME)
 
@@ -31,9 +32,13 @@ class Disaster(Base_DB_Model):
             return disaster
 
     @classmethod
-    def get(cls, _id=None, name=None,):
-        if not _id is None:
-            return super(Disaster, cls).get(_id=_id, db=db)
+    def get(
+        cls,
+        _id=None,
+        name=None,
+    ):
+        if _id is not None:
+            return super(Disaster, cls).get(_id=_id)
         with get_db() as db:
             table = db.table(cls.TABLE_NAME)
 
@@ -71,5 +76,3 @@ class Disaster(Base_DB_Model):
     @staticmethod
     def UNTIMELY_DEATH():
         return Disaster.get(name="Untimely Death")
-
-
