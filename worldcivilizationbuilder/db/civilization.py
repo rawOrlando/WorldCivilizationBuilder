@@ -1,5 +1,5 @@
-from db.base import Base_DB_Model
-from db.projects import Project
+from db.base import Base_DB_Model, get_db
+#from db.projects import Project
 
 class Civilization(Base_DB_Model):
     """ 
@@ -7,7 +7,7 @@ class Civilization(Base_DB_Model):
         id                      uuid
         name                    str
         last_year_updated       float
-        technologies            list
+        technologies_ids        list uuid to civtec
 
     """
     TABLE_NAME = 'civilization'
@@ -18,33 +18,32 @@ class Civilization(Base_DB_Model):
     # default values
     def _set_defaults(self):
         self._set_default("last_year_updated", 0)
-        self._set_default("technologies", [])
+        self._set_default("technologies_ids", [])
         super(Civilization, self)._set_defaults()
 
 
     @staticmethod
-    def create(name, last_year_updated=0, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Civilization.TABLE_NAME)
+    def create(name, last_year_updated=0):
+        with get_db() as db:
+            table = db.table(Civilization.TABLE_NAME)
 
-        civilization = Civilization()
-        Civilization.name = name
-        Civilization.last_year_updated = last_year_updated
-        Civilization.population = population
-        Civilization._set_deafualts()
-        table.insert(Civilization.__dict__)
-        return Civilization
+            civilization = Civilization()
+            civilization.name = name
+            civilization.last_year_updated = last_year_updated
+            civilization._set_defaults()
+            table.insert(civilization.__dict__)
+            return civilization
 
-    def territories(self, db=None,):
+    def territories(self):
         from db.map import Tile
         return Tile.filter((Query().controler_id == self.id))
 
-    def technologies(self, db=None,):
+    def technologies(self):
+        # todo utilize technologies_ids
         from db.technology import CivTec
         return CivTec.filter((query.civilization_id == self.id))
 
-    def settlements(self, db=None,):
+    def settlements(self):
         return Settlement.filter((Query().civilization_id == self.id))
 
     def get_all_settlement_locations(self):
@@ -52,10 +51,9 @@ class Civilization(Base_DB_Model):
         return [settlement.location for settlement in self.settlements]
 
     def can_hunt(self):
-        # todo
-        return self.civtec.filter(
-            Q(technology__name=Technology.BONE_TOOLS_NAME, active=True) | 
-            Q(technology__name=Technology.SLINGS_NAME), active=True).exists()
+        from db.technology import Technology
+        return (self.has_technology(Technology.BONE_TOOLS_NAME) or
+            self.has_technology(Technology.SLINGS_NAME))
 
     def can_spear_fish(self):
         from db.technology import Technology
@@ -98,20 +96,19 @@ class Settlement(Base_DB_Model):
 
     @staticmethod
     def create(name, civilization_id, location_id,
-               population=0, is_capital=False, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Settlement.TABLE_NAME)
+               population=0, is_capital=False):
+        with get_db() as db:
+            table = db.table(Settlement.TABLE_NAME)
 
-        settlement = Settlement()
-        settlement.name = name
-        settlement.civilization_id = civilization_id
-        settlement.location_id = location_id
-        settlement.population = population
-        settlement.is_capital = is_capital
-        settlement._set_deafualts()
-        table.insert(settlement.__dict__)
-        return settlement
+            settlement = Settlement()
+            settlement.name = name
+            settlement.civilization_id = civilization_id
+            settlement.location_id = location_id
+            settlement.population = population
+            settlement.is_capital = is_capital
+            settlement._set_defaults()
+            table.insert(settlement.__dict__)
+            return settlement
 
     def civilization(self):
         return Civilization.get(self.civilization_id)

@@ -38,20 +38,19 @@ class Technology(Base_DB_Model):
 
     @staticmethod
     def create(name, tech_type, description, 
-               prerequisite=None, needed_maintance=0, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Technology.TABLE_NAME)
+               prerequisite=None, needed_maintance=0):
+        with get_db() as db:
+            table = db.table(Technology.TABLE_NAME)
 
-        technology = Technology()
-        technology.name = name
-        technology.tech_type = tech_type
-        technology.description = description
-        technology.prerequisite = prerequisite
-        technology.needed_maintance = needed_maintance
-        technology._set_deafualts()
-        table.insert(technology.__dict__)
-        return technology
+            technology = Technology()
+            technology.name = name
+            technology.tech_type = tech_type
+            technology.description = description
+            technology.prerequisite = prerequisite
+            technology.needed_maintance = needed_maintance
+            technology._set_deafualts()
+            table.insert(technology.__dict__)
+            return technology
 
 
 class CivTec(Base_DB_Model):
@@ -71,18 +70,17 @@ class CivTec(Base_DB_Model):
 
     @staticmethod
     def create(technology_id, civilization_id, 
-               active=False, db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Settlement.TABLE_NAME)
+               active=False,):
+        with get_db() as db:
+            table = db.table(Settlement.TABLE_NAME)
 
-        civ_tec = CivTec()
-        civ_tec.technology_id = technology_id
-        civ_tec.civilization_id = civilization_id
-        civ_tec.active = active
-        civ_tec._set_deafualts()
-        table.insert(civ_tec.__dict__)
-        return civ_tec
+            civ_tec = CivTec()
+            civ_tec.technology_id = technology_id
+            civ_tec.civilization_id = civilization_id
+            civ_tec.active = active
+            civ_tec._set_deafualts()
+            table.insert(civ_tec.__dict__)
+            return civ_tec
 
     @property
     def needed_maintance(self):

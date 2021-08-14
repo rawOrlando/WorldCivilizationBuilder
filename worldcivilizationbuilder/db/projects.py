@@ -26,12 +26,7 @@ class Project(Base_DB_Model):
 
     @classmethod
     def create(cls, name, current_year, needed, civilization_id,
-               spent=0, db=None, table=None):
-        if not table:
-            if not db:
-                db = get_db()
-            table = db.table(Project.TABLE_NAME)
-
+               spent=0):
         project = cls()
         project.name = name
         project.last_spent = current_year
@@ -84,24 +79,23 @@ class Project(Base_DB_Model):
 
     @staticmethod
     def get(id):
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
 
-        query = Query()
-        values = table.get((query.id == _id))
+            query = Query()
+            values = table.get((query.id == _id))
 
-        # to this feel hacky
-        if "technology_type" in values:
-            return ResearchProject.create_from_values(values)
-        elif "territory_id" in values:
-            return ExplorationProject.create_from_values(values)
-        elif "settlement_id" in values:
-            return SettlementProject.create_from_values(values)
-        elif "tile_id" in values:
-            return TileMaintenanceProject.create_from_values(values)
-        elif "technology_id" in values:
-            return TechnologyMaintenanceProject.create_from_values(values)
+            # to this feel hacky
+            if "technology_type" in values:
+                return ResearchProject.create_from_values(values)
+            elif "territory_id" in values:
+                return ExplorationProject.create_from_values(values)
+            elif "settlement_id" in values:
+                return SettlementProject.create_from_values(values)
+            elif "tile_id" in values:
+                return TileMaintenanceProject.create_from_values(values)
+            elif "technology_id" in values:
+                return TechnologyMaintenanceProject.create_from_values(values)
 
     def civilization(self):
         from db.civilization import Civilization
@@ -124,20 +118,18 @@ class ResearchProject(Project):
 
     @classmethod
     def create(cls, name, current_year, civilization_id,
-               technology_type,
-               db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Project.TABLE_NAME)
+               technology_type,):
+        with get_db() as db:
+            table = db.table(Project.TABLE_NAME)
 
-        project = super(ResearchProject, cls).create(name=name, current_year=current_year,
-                                             civilization_id=civilization_id,
-                                             table=table)
-        project.technology_type = technology_type
+            project = super(ResearchProject, cls).create(name=name, current_year=current_year,
+                                                 civilization_id=civilization_id,
+                                                 table=table)
+            project.technology_type = technology_type
 
-        project._set_deafualts()
-        table.insert(project.__dict__)
-        return project
+            project._set_deafualts()
+            table.insert(project.__dict__)
+            return project
 
     def _is_complete(self):
         chance = random.randrange(1,101)
@@ -169,19 +161,17 @@ class ExplorationProject(Project):
     @classmethod
     def create(cls, name, current_year, civilization_id,
                territory_id,
-               db=None,):
-        if not db:
-            db = get_db()
-        table = db.table(Project.TABLE_NAME)
+               ):
+        with get_db() as db:
+            table = db.table(Project.TABLE_NAME)
 
-        project = super(ExplorationProject, cls).create(name=name, current_year=current_year,
-                                             civilization_id=civilization_id,
-                                             table=table)
-        project.territory_id = territory_id
+            project = super(ExplorationProject, cls).create(name=name, current_year=current_year,
+                                                 civilization_id=civilization_id,)
+            project.territory_id = territory_id
 
-        project._set_deafualts()
-        table.insert(project.__dict__)
-        return project
+            project._set_deafualts()
+            table.insert(project.__dict__)
+            return project
 
     @property
     def territory(self):
