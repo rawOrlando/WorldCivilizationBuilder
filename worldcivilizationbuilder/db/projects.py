@@ -1,8 +1,9 @@
 from tinydb import Query
 from db.base import Base_DB_Model
 from db.helper import Dict2Class, get_db
-from controlpanel.technology import unlock_another_technology
-from controlpanel.costs import calculate_maintance_cost_for_tile
+
+# from controlpanel.technology import unlock_another_technology
+# from controlpanel.costs import calculate_maintance_cost_for_tile
 
 import random
 
@@ -87,6 +88,9 @@ class Project(Base_DB_Model):
             query = Query()
             values = table.get((query.id == _id))
 
+            if not values:
+                return None
+
             # to this feel hacky
             if "technology_type" in values:
                 return ResearchProject.create_from_values(values)
@@ -113,7 +117,6 @@ class ResearchProject(Project):
         spent                   int
         last_spent              float
         civilization_id         uuid
-
         technology_type         str
 
     """
@@ -133,11 +136,11 @@ class ResearchProject(Project):
                 name=name,
                 current_year=current_year,
                 civilization_id=civilization_id,
-                table=table,
+                needed=None,
             )
             project.technology_type = technology_type
 
-            project._set_deafualts()
+            project._set_defaults()
             table.insert(project.__dict__)
             return project
 
@@ -147,7 +150,7 @@ class ResearchProject(Project):
 
     def _complete(self, year):
         civilization = self.civilization
-        tech = unlock_another_technology(civilization)
+        tech = None  # todo #unlock_another_technology(civilization)
 
         if tech.technology.needed_maintance:
             TechnologyMaintenanceProject.create(
@@ -181,14 +184,16 @@ class ExplorationProject(Project):
         with get_db() as db:
             table = db.table(Project.TABLE_NAME)
 
+            needed = 0  # todo make this be calculate on the fly
             project = super(ExplorationProject, cls).create(
                 name=name,
                 current_year=current_year,
                 civilization_id=civilization_id,
+                needed=needed,
             )
             project.territory_id = territory_id
 
-            project._set_deafualts()
+            project._set_defaults()
             table.insert(project.__dict__)
             return project
 
@@ -230,23 +235,21 @@ class SettlementProject(Project):
         current_year,
         civilization_id,
         settlement_id,
-        db=None,
     ):
-        if not db:
-            db = get_db()
-        table = db.table(Project.TABLE_NAME)
+        with get_db() as db:
+            table = db.table(Project.TABLE_NAME)
 
-        project = super(SettlementProject, cls).create(
-            name=name,
-            current_year=current_year,
-            civilization_id=civilization_id,
-            table=table,
-        )
-        project.settlement_id = settlement_id
+            project = super(SettlementProject, cls).create(
+                name=name,
+                current_year=current_year,
+                civilization_id=civilization_id,
+                needed=30,
+            )
+            project.settlement_id = settlement_id
 
-        project._set_deafualts()
-        table.insert(project.__dict__)
-        return project
+            project._set_defaults()
+            table.insert(project.__dict__)
+            return project
 
     @property
     def settlement(self):
@@ -281,22 +284,18 @@ class MaintenanceProject(Project):
         civilization_id,
         maintenance_window=1.0,
         spent=0,
-        db=None,
-        table=None,
     ):
-        if not table:
-            if not db:
-                db = get_db()
-            table = db.table(Project.TABLE_NAME)
 
         project = super(MaintenanceProject, cls).create(
             name=name,
             current_year=current_year,
             civilization_id=civilization_id,
-            table=table,
+            needed=needed,
         )
         project.maintenance_window = maintenance_window
         project.last_maintained = current_year
+
+        return project
 
     def _should_decay(self, year):
         return year - self.last_spent > self.maintenance_window
@@ -332,27 +331,25 @@ class TileMaintenanceProject(MaintenanceProject):
     def create(
         cls, current_year, civilization_id, tile_id, name=None, db=None, table=None
     ):
-        if not table:
-            if not db:
-                db = get_db()
-            table = db.table(Project.TABLE_NAME)
+        with get_db() as db:
+            table = db.table(TileMaintenanceProject.TABLE_NAME)
 
-        # jank todo make better
-        from db.map import Tile
+            # jank todo make better
+            from db.map import Tile
 
-        tile = Tile.get(_id=tile_id)
-        if not name:
-            name = "Tile Maintenace for" + str(tile)
+            tile = Tile.get(_id=tile_id)
+            if not name:
+                name = "Tile Maintenace for" + str(tile)
 
-        project = super(TileMaintenanceProject, cls).create(
-            name=name,
-            current_year=current_year,
-            civilization_id=civilization_id,
-            table=table,
-        )
-        project.tile_id = tile_id
-        table.insert(project.__dict__)
-        return project
+            project = super(TileMaintenanceProject, cls).create(
+                name=name,
+                current_year=current_year,
+                civilization_id=civilization_id,
+                needed=100,  # this numbe will not mater
+            )
+            project.tile_id = tile_id
+            table.insert(project.__dict__)
+            return project
 
     def _fail(self):
         # make civtec not active
@@ -369,7 +366,7 @@ class TileMaintenanceProject(MaintenanceProject):
 
     @property
     def needed(self):
-        return calculate_maintance_cost_for_tile(self.tile)
+        return 0  # todo get this to work #calculate_maintance_cost_for_tile(self.tile)
 
     @needed.setter
     def needed(self, value):
@@ -394,26 +391,27 @@ class TechnologyMaintenanceProject(MaintenanceProject):
 
     @classmethod
     def create(
-        cls, current_year, civilization_id, civ_tech, name=None, db=None, table=None
+        cls,
+        current_year,
+        civilization_id,
+        civ_tech,
+        name=None,
     ):
-        if not table:
-            if not db:
-                db = get_db()
+        with get_db() as db:
             table = db.table(Project.TABLE_NAME)
 
-        if not name:
-            name = ("Maintaince for " + civ_tech.technology.name,)
+            if not name:
+                name = ("Maintaince for " + civ_tech.technology.name,)
 
-        project = super(TechnologyMaintenanceProject, cls).create(
-            name=name,
-            current_year=current_year,
-            needed=civ_tech.needed_maintance,
-            civilization_id=civilization_id,
-            table=table,
-        )
-        project.technology_id = civ_tech.id
-        table.insert(project.__dict__)
-        return project
+            project = super(TechnologyMaintenanceProject, cls).create(
+                name=name,
+                current_year=current_year,
+                needed=civ_tech.needed_maintenance,
+                civilization_id=civilization_id,
+            )
+            project.technology_id = civ_tech.id
+            table.insert(project.__dict__)
+            return project
 
     def _fail(self):
         # make civtec not active

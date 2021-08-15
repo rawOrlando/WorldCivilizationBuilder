@@ -95,8 +95,8 @@ class CivTec(Base_DB_Model):
             return civ_tec
 
     @property
-    def needed_maintance(self):
-        return self.technology().needed_maintance
+    def needed_maintenance(self):
+        return self.technology.needed_maintance
 
     @property
     def technology(self):

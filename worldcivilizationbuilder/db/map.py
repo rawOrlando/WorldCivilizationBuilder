@@ -76,26 +76,24 @@ class Tile(Base_DB_Model):
         x=None,
         y=None,
         z=None,
-        db=None,
     ):
         if _id is not None:
-            return super(Tile, cls).get(_id=_id, db=db)
-        if not db:
-            db = get_db()
-        table = db.table(cls.TABLE_NAME)
+            return super(Tile, cls).get(_id=_id)
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
 
-        # require x, y, and z
-        query = Query()
-        values = table.get((query.x == x) & (query.y == y) & (query.z == z))
+            # require x, y, and z
+            query = Query()
+            values = table.get((query.x == x) & (query.y == y) & (query.z == z))
 
-        if values:
-            got = cls()
-            attr_dict = values
-            for key in attr_dict:
-                setattr(got, key, attr_dict[key])
-            return got
-        else:
-            return None
+            if values:
+                got = cls()
+                attr_dict = values
+                for key in attr_dict:
+                    setattr(got, key, attr_dict[key])
+                return got
+            else:
+                return None
 
     def __str__(self):
         controler = self.controler
