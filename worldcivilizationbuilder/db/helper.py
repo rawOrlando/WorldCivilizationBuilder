@@ -1,7 +1,12 @@
 from tinydb.database import TinyDB
 from tinydb.storages import JSONStorage
 from tinydb.middlewares import CachingMiddleware
+
+import json
 import os
+
+
+DB_PATH = os.getcwd() + "/db.json"
 
 
 class Dict2Class(object):
@@ -12,7 +17,13 @@ class Dict2Class(object):
 
 
 def get_db():
-    path = os.getcwd() + "/db.json"
-    # todo figure out path
-    return TinyDB(path)  #
+    return TinyDB(DB_PATH)  #
     # Todo figure out  this pieces, storage=CachingMiddleware(JSONStorage))
+
+
+def prettify_db():
+    with open(DB_PATH) as f:
+        json_data = json.load(f)
+
+    with open(DB_PATH, "w") as text_file:
+        text_file.write(json.dump(json_data, indent=2))

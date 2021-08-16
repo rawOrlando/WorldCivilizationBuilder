@@ -1,9 +1,12 @@
 import unittest
 from db.map import Tile
+from mock import patch
+from db.tests import test_db_path
 
 
+@patch("db.helper.DB_PATH", new_callable=test_db_path)
 class TestTile(unittest.TestCase):
-    def test_get_created_tile(self):
+    def test_get_created_tile(self, db_path):
         tile = Tile.create(x=-1100, y=0, z=1100)
         got_tile = Tile.get(_id=tile.id)
 

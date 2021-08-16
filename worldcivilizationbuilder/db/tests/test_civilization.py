@@ -1,12 +1,15 @@
 import unittest
 from db.civilization import Civilization, Settlement
+from mock import patch
+from db.tests import test_db_path
 
 
+@patch("db.helper.DB_PATH", new_callable=test_db_path)
 class TestCivilization(unittest.TestCase):
 
     # todo test should use a seperate DB.
 
-    def test_creation_set_values(self):
+    def test_creation_set_values(self, db_path):
         civ = Civilization.create(name="Temp test")
         self.assertEqual(civ.name, "Temp test")
 
@@ -19,7 +22,7 @@ class TestCivilization(unittest.TestCase):
         # clean up
         civ.delete()
 
-    def test_get_created_civilization(self):
+    def test_get_created_civilization(self, db_path):
         civ = Civilization.create(name="Temp test")
         got_civ = Civilization.get(_id=civ.id)
 
@@ -32,17 +35,18 @@ class TestCivilization(unittest.TestCase):
         # clean up
         civ.delete()
 
-    def test_get_civilization_that_does_not_exist(self):
+    def test_get_civilization_that_does_not_exist(self, db_path):
         civ = Civilization.get(_id="id???")
 
         self.assertIsNone(civ)
 
 
+@patch("db.helper.DB_PATH", new_callable=test_db_path)
 class TestSettlement(unittest.TestCase):
 
     # todo test should use a seperate DB.
 
-    def test_creation_set_values(self):
+    def test_creation_set_values(self, db_path):
         civ = Civilization.create(name="Temp civ")
         # todo add locations
         settlement = Settlement.create(
@@ -63,7 +67,7 @@ class TestSettlement(unittest.TestCase):
         civ.delete()
         settlement.delete()
 
-    def test_get_created_settlement(self):
+    def test_get_created_settlement(self, db_path):
         civ = Civilization.create(name="Temp test")
         # todo add locations
         settlement = Settlement.create(
