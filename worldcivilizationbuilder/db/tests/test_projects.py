@@ -9,13 +9,11 @@ from db.projects import (
 )
 from db.civilization import Civilization, Settlement
 from db.technology import Technology, CivTec
-from mock import patch
-from db.tests import test_db_path
+from tests import WCBTestCase
 
 
-@patch("db.helper.DB_PATH", new_callable=test_db_path)
-class TestResearchProject(unittest.TestCase):
-    def test_get_created_research_project(self, db_path):
+class TestResearchProject(WCBTestCase):
+    def test_get_created_research_project(self):
         project = ResearchProject.create(
             name="Name",
             current_year=0,
@@ -36,9 +34,8 @@ class TestResearchProject(unittest.TestCase):
         project.delete()
 
 
-@patch("db.helper.DB_PATH", new_callable=test_db_path)
-class TestExplorationProject(unittest.TestCase):
-    def test_get_created_exploration_project(self, db_path):
+class TestExplorationProject(WCBTestCase):
+    def test_get_created_exploration_project(self):
         project = ExplorationProject.create(
             name="Name",
             current_year=0,
@@ -59,9 +56,8 @@ class TestExplorationProject(unittest.TestCase):
         project.delete()
 
 
-@patch("db.helper.DB_PATH", new_callable=test_db_path)
-class TestSettlementProject(unittest.TestCase):
-    def test_get_created_exploration_project(self, db_path):
+class TestSettlementProject(WCBTestCase):
+    def test_get_created_exploration_project(self):
         civ = Civilization.create(name="Temp civ")
         # todo add locations
         settlement = Settlement.create(
@@ -91,9 +87,8 @@ class TestSettlementProject(unittest.TestCase):
         civ.delete()
 
 
-@patch("db.helper.DB_PATH", new_callable=test_db_path)
-class TestTileMaintenanceProject(unittest.TestCase):
-    def test_get_created_exploration_project(self, db_path):
+class TestTileMaintenanceProject(WCBTestCase):
+    def test_get_created_exploration_project(self):
         project = TileMaintenanceProject.create(
             name="Name",
             current_year=0,
@@ -117,9 +112,8 @@ class TestTileMaintenanceProject(unittest.TestCase):
         project.delete()
 
 
-@patch("db.helper.DB_PATH", new_callable=test_db_path)
-class TestTechnologyMaintenanceProject(unittest.TestCase):
-    def test_get_created_exploration_project(self, db_path):
+class TestTechnologyMaintenanceProject(WCBTestCase):
+    def test_get_created_exploration_project(self):
         civ = Civilization.create(name="Temp civ")
         tech = Technology.create(
             name=Technology.TANNING_NAME,
