@@ -112,3 +112,8 @@ class Tile(Base_DB_Model):
         from db.civilization import Civilization
 
         return Civilization.get(self.controler_id)
+
+    def distance_between(self, other):
+        return (
+            abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
+        ) / 2

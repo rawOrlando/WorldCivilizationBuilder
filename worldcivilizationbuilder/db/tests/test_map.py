@@ -16,3 +16,24 @@ class TestTile(WCBTestCase):
 
         # clean up
         tile.delete()
+
+    def test_tile_distance_between(self):
+        tile = Tile.create(x=00, y=0, z=00)
+        other = Tile.create(x=20, y=-10, z=-10)
+        other2 = Tile.create(x=15, y=-12, z=-3)
+
+        # See that distance is 0 to it self
+        self.assertEqual(tile.distance_between(tile), 0)
+
+        # Check a more normal distance
+        self.assertEqual(tile.distance_between(other), 20)
+        self.assertEqual(other.distance_between(other2), 7)
+        self.assertEqual(tile.distance_between(other2), 15)
+
+        # make sure distance works both ways
+        self.assertEqual(tile.distance_between(other), other.distance_between(tile))
+
+        # clean up the tiles
+        tile.delete()
+        other.delete()
+        other2.delete()
