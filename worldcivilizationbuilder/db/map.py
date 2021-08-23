@@ -60,14 +60,13 @@ class Tile(Base_DB_Model):
         y,
         z,
     ):
-        with get_db() as db:
-            # Get
-            tile = Tile.get(x=x, y=y, z=z, db=db)
-            if tile is None:
-                # Create
-                tile = Tile.create(x=x, y=y, z=z, db=db)
+        # Get
+        tile = Tile.get(x=x, y=y, z=z)
+        if tile is None:
+            # Create
+            tile = Tile.create(x=x, y=y, z=z)
 
-            return tile
+        return tile
 
     @classmethod
     def get(
@@ -112,3 +111,34 @@ class Tile(Base_DB_Model):
         from db.civilization import Civilization
 
         return Civilization.get(self.controler_id)
+
+    def distance_between(self, other):
+        return (
+            abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
+        ) / 2
+
+    def get_neighbors(self):
+        # North +y, -z
+        north = Tile.get_or_create(x=self.x, y=self.y + 1, z=self.z - 1)
+        # North East +x, -z
+        north_east = Tile.get_or_create(x=self.x + 1, y=self.y, z=self.z - 1)
+        # South East +x, -y
+        south_east = Tile.get_or_create(x=self.x + 1, y=self.y - 1, z=self.z)
+        # South -y, +z
+        south = Tile.get_or_create(x=self.x, y=self.y - 1, z=self.z + 1)
+        # North West -x, +z
+        north_west = Tile.get_or_create(x=self.x - 1, y=self.y, z=self.z + 1)
+        # South West -x, +y
+        south_west = Tile.get_or_create(x=self.x - 1, y=self.y + 1, z=self.z)
+
+        return {north, north_east, north_west, south, south_east, south_west}
+
+    @property
+    def projects(self):
+        from db.projects import TileMaintenanceProject
+
+        return TileMaintenanceProject.filter((Query().tile_id == self.id))
+
+    @property
+    def being_claimed(self):
+        return bool(self.projects)
