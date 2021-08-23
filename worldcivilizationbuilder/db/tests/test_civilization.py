@@ -1,4 +1,6 @@
 from db.civilization import Civilization, Settlement
+from db.map import Tile
+from db.projects import SettlementProject
 from tests import WCBTestCase
 
 
@@ -79,3 +81,26 @@ class TestSettlement(WCBTestCase):
         # clean up
         civ.delete()
         settlement.delete()
+
+    def test_tile_being_claimed(self):
+        civ = Civilization.create(name="Temp test")
+        tile = Tile.create(x=0, y=0, z=0)
+        settlement = Settlement.create(
+            name="place", civilization_id=civ.id, location_id=tile.id
+        )
+        self.assertFalse(settlement.being_built)
+
+        # Create a project for this.
+        project = SettlementProject.create(
+            name="Name",
+            current_year=0,
+            civilization_id=civ.id,  # todo actual have a civ here
+            settlement_id=settlement.id,  # todo actual have a settlement here
+        )
+
+        self.assertTrue(settlement.being_built)
+
+        # clean up the tiles
+        civ.delete()
+        tile.delete()
+        project.delete()
