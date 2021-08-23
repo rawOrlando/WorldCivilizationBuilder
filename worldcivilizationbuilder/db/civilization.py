@@ -136,3 +136,13 @@ class Settlement(Base_DB_Model):
         from db.map import Tile
 
         return Tile.get(self.location_id)
+
+    @property
+    def projects(self):
+        from db.projects import SettlementProject
+
+        return SettlementProject.filter((Query().settlement_id == self.id))
+
+    @property
+    def being_built(self):
+        return bool(self.projects)
