@@ -1,8 +1,8 @@
-import unittest
 from db.map import Tile
+from tests import WCBTestCase
 
 
-class TestTile(unittest.TestCase):
+class TestTile(WCBTestCase):
     def test_get_created_tile(self):
         tile = Tile.create(x=-1100, y=0, z=1100)
         got_tile = Tile.get(_id=tile.id)

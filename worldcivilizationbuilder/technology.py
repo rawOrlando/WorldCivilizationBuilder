@@ -1,4 +1,4 @@
-from controlpanel.models import Technology, CivTec
+from db.technology import Technology, CivTec
 import random
 
 
@@ -32,8 +32,8 @@ def unlock_another_technology(civilization):
     choosen_index = random.randrange(0, len(possible_tech))
     tech = possible_tech[choosen_index]
 
-    CivTec.objects.create(
-        civilization=civilization,
-        technology=tech,
+    CivTec.create(
+        civilization=civilization.id,
+        technology=tech.id,
         active=True,
     )

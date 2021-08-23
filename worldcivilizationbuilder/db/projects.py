@@ -2,7 +2,8 @@ from tinydb import Query
 from db.base import Base_DB_Model
 from db.helper import Dict2Class, get_db
 
-# from controlpanel.technology import unlock_another_technology
+from technology import unlock_another_technology
+
 # from controlpanel.costs import calculate_maintance_cost_for_tile
 
 import random
@@ -150,7 +151,7 @@ class ResearchProject(Project):
 
     def _complete(self, year):
         civilization = self.civilization
-        tech = None  # todo #unlock_another_technology(civilization)
+        tech = unlock_another_technology(civilization)
 
         if tech.technology.needed_maintance:
             TechnologyMaintenanceProject.create(

@@ -9,9 +9,10 @@ from db.projects import (
 )
 from db.civilization import Civilization, Settlement
 from db.technology import Technology, CivTec
+from tests import WCBTestCase
 
 
-class TestResearchProject(unittest.TestCase):
+class TestResearchProject(WCBTestCase):
     def test_get_created_research_project(self):
         project = ResearchProject.create(
             name="Name",
@@ -33,7 +34,7 @@ class TestResearchProject(unittest.TestCase):
         project.delete()
 
 
-class TestExplorationProject(unittest.TestCase):
+class TestExplorationProject(WCBTestCase):
     def test_get_created_exploration_project(self):
         project = ExplorationProject.create(
             name="Name",
@@ -55,7 +56,7 @@ class TestExplorationProject(unittest.TestCase):
         project.delete()
 
 
-class TestSettlementProject(unittest.TestCase):
+class TestSettlementProject(WCBTestCase):
     def test_get_created_exploration_project(self):
         civ = Civilization.create(name="Temp civ")
         # todo add locations
@@ -86,7 +87,7 @@ class TestSettlementProject(unittest.TestCase):
         civ.delete()
 
 
-class TestTileMaintenanceProject(unittest.TestCase):
+class TestTileMaintenanceProject(WCBTestCase):
     def test_get_created_exploration_project(self):
         project = TileMaintenanceProject.create(
             name="Name",
@@ -111,7 +112,7 @@ class TestTileMaintenanceProject(unittest.TestCase):
         project.delete()
 
 
-class TestTechnologyMaintenanceProject(unittest.TestCase):
+class TestTechnologyMaintenanceProject(WCBTestCase):
     def test_get_created_exploration_project(self):
         civ = Civilization.create(name="Temp civ")
         tech = Technology.create(

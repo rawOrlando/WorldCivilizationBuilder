@@ -1,8 +1,8 @@
-import unittest
 from db.civilization import Civilization, Settlement
+from tests import WCBTestCase
 
 
-class TestCivilization(unittest.TestCase):
+class TestCivilization(WCBTestCase):
 
     # todo test should use a seperate DB.
 
@@ -38,10 +38,7 @@ class TestCivilization(unittest.TestCase):
         self.assertIsNone(civ)
 
 
-class TestSettlement(unittest.TestCase):
-
-    # todo test should use a seperate DB.
-
+class TestSettlement(WCBTestCase):
     def test_creation_set_values(self):
         civ = Civilization.create(name="Temp civ")
         # todo add locations
@@ -82,7 +79,3 @@ class TestSettlement(unittest.TestCase):
         # clean up
         civ.delete()
         settlement.delete()
-
-
-if __name__ == "__main__":
-    unittest.main()

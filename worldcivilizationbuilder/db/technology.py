@@ -59,6 +59,37 @@ class Technology(Base_DB_Model):
             table.insert(technology.__dict__)
             return technology
 
+    @classmethod
+    def get(cls, _id=None, name=None):
+        if _id is not None:
+            return super(Technology, cls).get(_id=_id)
+        with get_db() as db:
+            table = db.table(cls.TABLE_NAME)
+
+            query = Query()
+            values = table.get((query.name == name))
+
+            if values:
+                got = cls()
+                attr_dict = values
+                for key in attr_dict:
+                    setattr(got, key, attr_dict[key])
+                return got
+            else:
+                return None
+
+    @classmethod
+    def seed_technology(cls):
+        # Create all basic technology
+        for name in cls.PALEO_TECH_NAMES:
+            if cls.get(name=name) is None:
+                cls.create(
+                    name=name,
+                    tech_type="Technology",
+                    description=None,  # todo...?
+                    # todo prerequite...?
+                )
+
 
 class CivTec(Base_DB_Model):
     """
@@ -100,4 +131,5 @@ class CivTec(Base_DB_Model):
 
     @property
     def technology(self):
-        return Technology.get(self.technology_id)
+        temp = Technology.get(self.technology_id)
+        return temp
