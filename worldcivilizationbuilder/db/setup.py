@@ -8,15 +8,15 @@ def create_base_data():
 
 
 def create_base_disaster_data():
-    if Disaster.DISEASE_OUTBREAK is None:
+    if Disaster.DISEASE_OUTBREAK() is None:
         Disaster.create(name="Disease Outbreak")
-    if Disaster.DRAUGHT is None:
+    if Disaster.DRAUGHT() is None:
         Disaster.create(name="Draught")
-    if Disaster.FOREST_FIRE is None:
+    if Disaster.FOREST_FIRE() is None:
         Disaster.create(name="Forest Fire")
-    if Disaster.IN_FIGHTING is None:
+    if Disaster.IN_FIGHTING() is None:
         Disaster.create(name="In Fighting")
-    if Disaster.UNTIMELY_DEATH is None:
+    if Disaster.UNTIMELY_DEATH() is None:
         Disaster.create(name="Untimely Death")
 
 

@@ -27,7 +27,7 @@ class Disaster(Base_DB_Model):
             disaster = Disaster()
             disaster.name = name
             disaster.level = level
-            disaster._set_deafualts()
+            disaster._set_defaults()
             table.insert(disaster.__dict__)
             return disaster
 
@@ -76,3 +76,30 @@ class Disaster(Base_DB_Model):
     @staticmethod
     def UNTIMELY_DEATH():
         return Disaster.get(name="Untimely Death")
+
+
+class CurrentDisaster(Base_DB_Model):
+    """
+    Fields:
+        id                      uuid
+        civilization_id         uuid
+        disaster_id             uuid
+        start_time              float
+        end_time                float
+    """
+
+    TABLE_NAME = "current_disaster"
+
+    @staticmethod
+    def create(civilization_id, disaster_id, start_time, end_time):
+        with get_db() as db:
+            table = db.table(CurrentDisaster.TABLE_NAME)
+
+            c_disaster = CurrentDisaster()
+            c_disaster.civilization_id = civilization_id
+            c_disaster.disaster_id = disaster_id
+            c_disaster.start_time = start_time
+            c_disaster.end_time = end_time
+            c_disaster._set_defaults()
+            table.insert(c_disaster.__dict__)
+            return c_disaster
