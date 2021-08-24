@@ -103,4 +103,5 @@ class TestSettlement(WCBTestCase):
         # clean up the tiles
         civ.delete()
         tile.delete()
+        # project will delete settlement because it was not finished.
         project.delete()
