@@ -142,3 +142,6 @@ class Tile(Base_DB_Model):
     @property
     def being_claimed(self):
         return bool(self.projects)
+
+    def has(self, resource):
+        return resource in self.resources

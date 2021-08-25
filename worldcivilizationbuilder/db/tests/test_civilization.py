@@ -1,6 +1,7 @@
 from db.civilization import Civilization, Settlement
 from db.map import Tile
 from db.projects import SettlementProject
+from db.technology import Technology, CivTec
 from tests import WCBTestCase
 
 
@@ -38,6 +39,44 @@ class TestCivilization(WCBTestCase):
         civ = Civilization.get(_id="id???")
 
         self.assertIsNone(civ)
+
+    def test_has_technology(self):
+        civ = Civilization.create(name="Temp test")
+        tec = CivTec.create(
+            technology_id=Technology.get(name=Technology.BONE_TOOLS_NAME).id,
+            civilization_id=civ.id,
+            active=True,
+        )
+        self.assertTrue(civ.has_technology(Technology.BONE_TOOLS_NAME))
+        self.assertFalse(civ.has_technology(Technology.FIRE_NAME))
+        # Tests that is technlogies become unmaintained, It is not seen as having.
+        tec.active = False
+        tec.save()
+        self.assertFalse(civ.has_technology(Technology.BONE_TOOLS_NAME))
+        self.assertTrue(civ.has_technology_knowledge(Technology.BONE_TOOLS_NAME))
+
+    def t_can_explore_tile(self):
+        civ = Civilization.create(name="Temp test")
+        river_tile = Tile.create(x=0, y=0, z=0, resources=["River"])
+        forest_tile = Tile.create(x=1, y=-1, z=0, resources=["Forest"])
+        shore_tile = Tile.create(x=-1, y=1, z=0, resources=["Shore"])
+        ocean_tile = Tile.create(x=0, y=1, z=-1, resources=["Ocean"])
+
+        # check with out any tech can only explore rivers.
+        self.assertTrue(civ._can_explore_tile(river_tile))
+        self.assertFalse(civ._can_explore_tile(forest_tile))
+        self.assertFalse(civ._can_explore_tile(shore_tile))
+        self.assertFalse(civ._can_explore_tile(ocean_tile))
+
+        # check with Boiling water
+        # todo create boiling water.
+        self.assertTrue(civ._can_explore_tile(river_tile))
+        self.assertFalse(civ._can_explore_tile(forest_tile))
+        self.assertTrue(civ._can_explore_tile(shore_tile))
+        self.assertFalse(civ._can_explore_tile(ocean_tile))
+
+        # clean up
+        civ.delete()
 
 
 class TestSettlement(WCBTestCase):
