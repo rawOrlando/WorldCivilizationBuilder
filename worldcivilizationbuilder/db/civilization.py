@@ -1,5 +1,6 @@
 from db.base import Base_DB_Model, get_db
 from tinydb import Query
+from db.technology import Technology
 
 # from db.projects import Project
 
@@ -73,7 +74,7 @@ class Civilization(Base_DB_Model):
         return bool(
             [
                 civtec
-                for civtec in self.technologies
+                for civtec in self.technologies()
                 if civtec.active and civtec.technology.name == technology_name
             ]
         )
@@ -84,14 +85,33 @@ class Civilization(Base_DB_Model):
         return bool(
             [
                 civtec
-                for civtec in self.technologies
-                if civtec.active and civtec.technology.name == technology_name
+                for civtec in self.technologies()
+                if civtec.technology.name == technology_name
             ]
         )
 
     def possible_exploration_tiles(self):
-        pass
-        # todo
+        # Get all the tiles around your tiles.
+        # todo find a way to do this with django
+        neighbors = set()
+        # for now need rivers
+        for controled_tile in self.territories():
+            neighbors = neighbors.union(set(controled_tile.get_neighbors()))
+
+        neighbors = neighbors.difference(self.territories())
+
+        for tile in neighbors.copy():
+            if not self._is_tile_explorable(tile):
+                neighbors.remove(tile)
+        return neighbors
+
+    def _can_explore_tile(self, tile):
+        # this could be one line but I think this is more readable.
+        if tile.has("River"):
+            return True
+        if tile.has("Shore") and self.has_technology(Technology.BOILING_WATER_NAME):
+            return True
+        return False
 
 
 class Settlement(Base_DB_Model):
