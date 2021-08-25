@@ -101,7 +101,7 @@ class Civilization(Base_DB_Model):
         neighbors = neighbors.difference(self.territories())
 
         for tile in neighbors.copy():
-            if not self._is_tile_explorable(tile):
+            if not self._can_explore_tile(tile):
                 neighbors.remove(tile)
         return neighbors
 
