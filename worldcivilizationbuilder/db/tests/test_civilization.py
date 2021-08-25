@@ -82,6 +82,26 @@ class TestCivilization(WCBTestCase):
         # clean up
         civ.delete()
 
+    def test_possible_exploration_tiles(self):
+        civ = Civilization.create(name="Temp test")
+        Tile.create(x=0, y=0, z=0, resources=["River"], controler_id=civ.id)
+        Tile.create(x=1, y=-1, z=0, resources=["Forest"])
+        Tile.create(x=-1, y=1, z=0, resources=["Shore"])
+        Tile.create(x=0, y=1, z=-1, resources=["Ocean"])
+        Tile.create(x=0, y=-1, z=1, resources=["Shore"])
+        Tile.create(x=1, y=0, z=-1, resources=["River"])
+        Tile.create(x=-1, y=0, z=1, resources=["River"])
+
+        self.assertEqual(len(civ.possible_exploration_tiles()), 2)
+
+        # See that with Boiling Water
+        CivTec.create(
+            technology_id=Technology.get(name=Technology.BOILING_WATER_NAME).id,
+            civilization_id=civ.id,
+            active=True,
+        )
+        self.assertEqual(len(civ.possible_exploration_tiles()), 4)
+
 
 class TestSettlement(WCBTestCase):
     def test_creation_set_values(self):
