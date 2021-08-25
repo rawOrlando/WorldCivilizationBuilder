@@ -55,7 +55,7 @@ class TestCivilization(WCBTestCase):
         self.assertFalse(civ.has_technology(Technology.BONE_TOOLS_NAME))
         self.assertTrue(civ.has_technology_knowledge(Technology.BONE_TOOLS_NAME))
 
-    def t_can_explore_tile(self):
+    def test_can_explore_tile(self):
         civ = Civilization.create(name="Temp test")
         river_tile = Tile.create(x=0, y=0, z=0, resources=["River"])
         forest_tile = Tile.create(x=1, y=-1, z=0, resources=["Forest"])
@@ -69,7 +69,11 @@ class TestCivilization(WCBTestCase):
         self.assertFalse(civ._can_explore_tile(ocean_tile))
 
         # check with Boiling water
-        # todo create boiling water.
+        CivTec.create(
+            technology_id=Technology.get(name=Technology.BOILING_WATER_NAME).id,
+            civilization_id=civ.id,
+            active=True,
+        )
         self.assertTrue(civ._can_explore_tile(river_tile))
         self.assertFalse(civ._can_explore_tile(forest_tile))
         self.assertTrue(civ._can_explore_tile(shore_tile))
