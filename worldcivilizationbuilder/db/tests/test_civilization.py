@@ -102,6 +102,39 @@ class TestCivilization(WCBTestCase):
         )
         self.assertEqual(len(civ.possible_exploration_tiles()), 4)
 
+    def test_hunting(self):
+        """
+        Tests to see if civilization can hunt when they should.
+        """
+        civ = Civilization.create(name="Temp test")
+        self.assertFalse(civ.can_hunt())
+        self.assertFalse(civ.can_spear_fish())
+        slings = CivTec.create(
+            technology_id=Technology.get(name=Technology.SLINGS_NAME).id,
+            civilization_id=civ.id,
+            active=True,
+        )
+        self.assertTrue(civ.can_hunt())
+        self.assertFalse(civ.can_spear_fish())
+        bone_tools = CivTec.create(
+            technology_id=Technology.get(name=Technology.BONE_TOOLS_NAME).id,
+            civilization_id=civ.id,
+            active=True,
+        )
+        self.assertTrue(civ.can_hunt())
+        self.assertTrue(civ.can_spear_fish())
+        # check technology does not work whne not maintained
+        slings.active = False
+        bone_tools.active = False
+        slings.save()
+        bone_tools.save()
+        self.assertFalse(civ.can_hunt())
+        self.assertFalse(civ.can_spear_fish())
+
+        civ.delete()
+        slings.delete()
+        bone_tools.delete()
+
 
 class TestSettlement(WCBTestCase):
     def test_creation_set_values(self):
