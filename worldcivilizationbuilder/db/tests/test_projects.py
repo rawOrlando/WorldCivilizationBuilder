@@ -8,6 +8,7 @@ from db.projects import (
     TechnologyMaintenanceProject,
 )
 from db.civilization import Civilization, Settlement
+from db.map import Tile
 from db.technology import Technology, CivTec
 from tests import WCBTestCase
 
@@ -88,12 +89,18 @@ class TestSettlementProject(WCBTestCase):
 
 
 class TestTileMaintenanceProject(WCBTestCase):
-    def test_get_created_exploration_project(self):
+    def test_get_created_tile_maintenance_project(self):
+        civ = Civilization.create(name="Temp civ")
+        tile = Tile.create(x=0, y=0, z=0, controler_id=civ.id)
+        settlement = Settlement.create(
+            name="place", civilization_id=civ.id, location_id=tile.id
+        )
+
         project = TileMaintenanceProject.create(
             name="Name",
             current_year=0,
-            civilization_id=None,  # todo actual have a civ here
-            tile_id=None,  # todo actual have a tile here
+            civilization_id=civ.id,
+            tile_id=tile.id,
         )
         got_project = Project.get(_id=project.id)
 
@@ -109,7 +116,50 @@ class TestTileMaintenanceProject(WCBTestCase):
         self.assertEqual(project.last_maintained, got_project.last_maintained)
 
         # clean up
+        civ.delete()
+        tile.delete()
+        settlement.delete()
         project.delete()
+
+    def test_tile_maintenance_project_needed_value_calculated(self):
+        civ = Civilization.create(name="Temp civ")
+        tile = Tile.create(x=0, y=0, z=0, controler_id=civ.id)
+        tile2 = Tile.create(x=-1, y=1, z=0, controler_id=civ.id)
+        tile3 = Tile.create(x=-2, y=-1, z=3, controler_id=civ.id)
+        settlement = Settlement.create(
+            name="place", civilization_id=civ.id, location_id=tile.id
+        )
+        project = TileMaintenanceProject.create(
+            name="Name",
+            current_year=0,
+            civilization_id=civ.id,
+            tile_id=tile.id,
+        )
+        project2 = TileMaintenanceProject.create(
+            name="Name",
+            current_year=0,
+            civilization_id=civ.id,
+            tile_id=tile2.id,
+        )
+        project3 = TileMaintenanceProject.create(
+            name="Name",
+            current_year=0,
+            civilization_id=civ.id,
+            tile_id=tile3.id,
+        )
+
+        # check the costs calculated correctly.
+        self.assertEqual(project.needed, 1)
+        self.assertEqual(project2.needed, 3)
+        self.assertEqual(project3.needed, 7)
+
+        # clean up
+        civ.delete()
+        tile.delete()
+        tile2.delete()
+        settlement.delete()
+        project.delete()
+        project2.delete()
 
 
 class TestTechnologyMaintenanceProject(WCBTestCase):
