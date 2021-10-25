@@ -140,6 +140,12 @@ class Tile(Base_DB_Model):
         return TileMaintenanceProject.filter((Query().tile_id == self.id))
 
     @property
+    def settlements(self):
+        from db.civilization import Settlement
+
+        return Settlement.filter((Query().location_id == self.id))
+
+    @property
     def being_claimed(self):
         return bool(self.projects)
 

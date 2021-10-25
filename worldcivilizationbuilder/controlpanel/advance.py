@@ -7,8 +7,6 @@ from disasters.disaster import next_disaster, move_disaster_along
 from controlpanel.technology import unlock_another_technology
 import random
 
-from projects.models import ProjectOption
-
 
 def spend_resources(civilization, year, resources_spent):
     # Todo log all of this.
@@ -66,20 +64,20 @@ def advance_civilization_a_season(civilization):
         # Todo
 
         # Lose tiles if un maintaned
-        for tile in civilization.tiles.all():
-            if not tile.maintaned:
-                tile.controler = None
-            tile.reset_maintance()
+        # for tile in civilization.tiles.all():
+        #     if not tile.maintaned:
+        #         tile.controler = None
+        #     tile.reset_maintance()
 
-            tile.save()
+        #     tile.save()
 
-        for tech in civilization.civtec.all():
-            if tech.needed_maintance:
-                if not tech.maintaned:
-                    tech.active = False
-                tech.reset_maintance()
+        # for tech in civilization.civtec.all():
+        #     if tech.needed_maintance:
+        #         if not tech.maintaned:
+        #             tech.active = False
+        #         tech.reset_maintance()
 
-                tech.save()
+        #         tech.save()
 
         repopulate(civilization)
 

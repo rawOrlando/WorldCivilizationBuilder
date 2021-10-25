@@ -8,11 +8,10 @@ from controlpanel.models import Civilization, Tile, Settlement, CivTec
 from controlpanel.advance import spend_resources, advance_civilization_a_season
 from controlpanel.costs import (
     get_maintance_projects,
-    generate_resources,
     calculate_maintance_cost_for_tile,
     calculate_distance_to_closest_settlement,
 )
-from controlpanel.resources import acceptable_resources_spent
+from resources import acceptable_resources_spent
 from projects.models import (
     Project,
     ProjectOption,
@@ -20,6 +19,7 @@ from projects.models import (
     ExplorationProject,
     SettlementProject,
 )
+from resources.generate import generate_resources
 
 
 def index(request):
