@@ -1,5 +1,6 @@
-from disasters.models import Disaster, CurrentDisaster
+from db.disaster import Disaster, CurrentDisaster
 from disasters.disease import suffer_disease
+from tinydb import Query
 import random
 
 
@@ -7,7 +8,7 @@ def next_disaster(year, civilization):
     chance = random.randrange(1, 7)
     if chance == 1:
         # Disease Outbreak
-        CurrentDisaster.objects.create(
+        CurrentDisaster.create(
             civilization=civilization,
             disaster=Disaster.DISEASE_OUTBREAK(),
             start_time=year,
@@ -18,7 +19,7 @@ def next_disaster(year, civilization):
         print("Imporant person died untimely!")
         # Todo giure out what to do her
         # erase research and lose population
-        CurrentDisaster.objects.create(
+        CurrentDisaster.create(
             civilization=civilization,
             disaster=Disaster.UNTIMELY_DEATH(),
             start_time=year,
@@ -26,7 +27,7 @@ def next_disaster(year, civilization):
         )
     elif chance == 3:
         # Draught
-        CurrentDisaster.objects.create(
+        CurrentDisaster.create(
             civilization=civilization,
             disaster=Disaster.DRAUGHT(),
             start_time=year,
@@ -34,7 +35,7 @@ def next_disaster(year, civilization):
         )
     elif chance == 4:
         # In Fighting
-        CurrentDisaster.objects.create(
+        CurrentDisaster.create(
             civilization=civilization,
             disaster=Disaster.IN_FIGHTING(),
             start_time=year,
@@ -42,7 +43,7 @@ def next_disaster(year, civilization):
         )
     elif chance == 5:
         # Forest Fire
-        CurrentDisaster.objects.create(
+        CurrentDisaster.create(
             civilization=civilization,
             disaster=Disaster.FOREST_FIRE(),
             start_time=year,
@@ -54,31 +55,51 @@ def next_disaster(year, civilization):
 
 
 def is_in_a_draught(civilization):
-    return CurrentDisaster.objects.filter(
-        civilization=civilization.id, disaster=Disaster.DRAUGHT()
-    ).exists()
+    return bool(
+        CurrentDisaster.filter(
+            (
+                (Query().civilization_id == civilization.id)
+                & (Query().disaster_id == Disaster.DRAUGHT().id)
+            )
+        )
+    )
 
 
 def during_forest_fire(civilization):
-    return CurrentDisaster.objects.filter(
-        civilization=civilization.id, disaster=Disaster.FOREST_FIRE()
-    ).exists()
+    return bool(
+        CurrentDisaster.filter(
+            (
+                (Query().civilization_id == civilization.id)
+                & (Query().disaster_id == Disaster.FOREST_FIRE().id)
+            )
+        )
+    )
 
 
 def is_in_fighting(civilization):
-    return CurrentDisaster.objects.filter(
-        civilization=civilization.id, disaster=Disaster.IN_FIGHTING()
-    ).exists()
+    return bool(
+        CurrentDisaster.filter(
+            (
+                (Query().civilization_id == civilization.id)
+                & (Query().disaster_id == Disaster.IN_FIGHTING().id)
+            )
+        )
+    )
 
 
 def durring_epidemic(civilization):
-    return CurrentDisaster.objects.filter(
-        civilization=civilization.id, disaster=Disaster.DISEASE_OUTBREAK()
-    ).exists()
+    return bool(
+        CurrentDisaster.filter(
+            (
+                (Query().civilization_id == civilization.id)
+                & (Query().disaster_id == Disaster.DISEASE_OUTBREAK().id)
+            )
+        )
+    )
 
 
 def move_disaster_along(disaster, new_time):
-    if disaster == Disaster.DISEASE_OUTBREAK():
+    if disaster.id == Disaster.DISEASE_OUTBREAK().id:
         suffer_disease(disaster.civilization)
     if disaster.end_time <= new_time:
         end_disater(disaster)

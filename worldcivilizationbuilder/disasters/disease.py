@@ -1,5 +1,5 @@
 import random
-from controlpanel.models import Technology
+from db.technology import Technology
 
 
 def suffer_disease(civilization):
@@ -9,7 +9,7 @@ def suffer_disease(civilization):
     # if chance happens that person dies.
     # to make this work it will be out of 10,000
     chance = 500
-    for settlement in civilization.settlements:
+    for settlement in civilization.settlements():
         population = settlement.population
         settlement_chance = chance + population
         if civilization.has_technology(Technology.SOAP_NAME):
@@ -18,3 +18,5 @@ def suffer_disease(civilization):
             happened = random.randrange(1, 10001)
             if happened <= settlement_chance:
                 settlement.population -= 1
+
+        settlement.save()
