@@ -54,7 +54,7 @@ class Civilization(Base_DB_Model):
 
     def get_all_settlement_locations(self):
         # todo this feels make sure locations are unique.
-        return [settlement.location for settlement in self.settlements]
+        return [settlement.location() for settlement in self.settlements()]
 
     def can_hunt(self):
         from db.technology import Technology
