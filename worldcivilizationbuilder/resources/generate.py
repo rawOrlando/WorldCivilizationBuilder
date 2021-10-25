@@ -1,4 +1,4 @@
-from controlpanel.costs import calculate_distance_to_closest_settlement
+# from controlpanel.costs import calculate_distance_to_closest_settlement
 from disasters.disaster import (
     is_in_a_draught,
     during_forest_fire,
@@ -15,6 +15,9 @@ from resources.assets import (
     HILL_NAME,
 )
 from db.technology import Technology
+
+# temp
+calculate_distance_to_closest_settlement = 0
 
 
 def generate_resources(civilization):

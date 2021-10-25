@@ -367,9 +367,7 @@ class TileMaintenanceProject(MaintenanceProject):
 
     @property
     def needed(self):
-        from controlpanel.costs import calculate_maintance_cost_for_tile
-
-        return calculate_maintance_cost_for_tile(self.tile)
+        return 0  # todo get this to work #calculate_maintance_cost_for_tile(self.tile)
 
     @needed.setter
     def needed(self, value):
