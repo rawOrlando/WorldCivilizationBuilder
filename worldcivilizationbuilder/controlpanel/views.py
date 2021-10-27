@@ -3,8 +3,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import redirect
+from django.urls import reverse
 
-from controlpanel.models import Civilization, Tile, Settlement, CivTec
+from db.civilization import Civilization, Settlement
+from db.map import Tile
+from controlpanel.models import CivTec
 from controlpanel.advance import spend_resources, advance_civilization_a_season
 from controlpanel.costs import (
     get_maintance_projects,
@@ -23,7 +26,10 @@ from resources.generate import generate_resources
 
 
 def index(request):
-    civilization_list = Civilization.objects.all()
+    from db.setup import create_base_data
+
+    create_base_data()
+    civilization_list = Civilization.all()
     context = {
         "civilization_list": civilization_list,
     }
@@ -31,7 +37,7 @@ def index(request):
 
 
 def civilization(request, civilization_id):
-    civilization = Civilization.objects.get(id=civilization_id)
+    civilization = Civilization.get(_id=civilization_id)
     year = civilization.last_year_updated
     resource_bundle = generate_resources(civilization)
     error = None
@@ -55,6 +61,96 @@ def civilization(request, civilization_id):
         "error": error,
     }
     return render(request, "civilization.html", context)
+
+
+## Todo these 3 views pages to make a new civilization
+def new_civilization(request):
+    if request.POST:
+        civ = Civilization.create(name=request.POST["name"])
+
+        tile1_id = request.POST["tile1"].replace("tile_", "")
+        tile2_id = request.POST["tile2"].replace("tile_", "")
+        tile3_id = request.POST["tile3"].replace("tile_", "")
+
+        tile1 = Tile.get(_id=tile1_id)
+        tile1.controler_id = civ.id
+        tile1.save()
+
+        print(tile2_id)
+        tile2 = Tile.get(_id=tile2_id)
+        print(tile2)
+        print(tile1)
+        tile2.controler_id = civ.id
+        tile2.save()
+
+        tile3 = Tile.get(_id=tile3_id)
+        tile3.controler_id = civ.id
+        tile3.save()
+
+        spot = request.POST["spot"]
+        if spot == 1:
+            location_id = tile1_id
+        elif spot == 2:
+            location_id = tile2_id
+        else:
+            location_id = tile3_id
+
+        Settlement.create(
+            name=request.POST["cap_name"],
+            civilization_id=civ.id,
+            location_id=location_id,
+            population=15,
+            is_capital=True,
+        )
+
+        # todo cahnge this to use redirect
+        return redirect("/")
+
+    from tinydb import Query
+
+    tiles = Tile.filter(Query().controler_id is None)
+    tiles = Tile.all()
+    print(tiles)
+    context = {
+        "tiles": tiles_to_info(tiles),
+    }
+    return render(request, "new_civilization.html", context)
+
+
+def new_civilization_land(request, civilization_id):
+    from tinydb import Query
+
+    tiles = Tile.filter(Query().controler_id is None)
+    print(tiles)
+    context = {
+        "tiles": tiles_to_info(tiles),
+    }
+
+    return render(request, "new_civilization.html", context)
+
+
+def new_civilization_capital(request):
+    pass
+
+
+def new_tile(request):
+    from map.assets import ALL_ASSETS
+
+    if request.POST:
+        # Get the Assets from post request
+        assets = list(set(ALL_ASSETS).intersection(set(request.POST.keys())))
+
+        Tile.create(
+            x=request.POST["x"],
+            y=request.POST["y"],
+            z=request.POST["z"],
+            resources=assets,
+        )
+
+    context = {
+        "assets": ALL_ASSETS,
+    }
+    return render(request, "new_tile.html", context)
 
 
 def civilization_details(request, civilization_id):
@@ -112,21 +208,25 @@ def new_settlement(request, civilization_id):
         return redirect("/" + str(civilization_id) + "/")
     # Get all tiles without settlements
     tiles = civilization.tiles.filter(settlements=None)
+
+    context = {
+        "civilization": civilization,
+        "tiles": tiles_to_info(tiles),
+    }
+    return render(request, "new_settlement.html", context)
+
+
+def tiles_to_info(tiles):
     tiles_info = []
     for tile in tiles:
         tiles_info.append(
             {
                 "id": tile.id,
                 "name": str(tile),
-                "assets": tile.assets,
+                "assets": tile.resources,
             }
         )
-
-    context = {
-        "civilization": civilization,
-        "tiles": tiles_info,
-    }
-    return render(request, "new_settlement.html", context)
+    return tiles_info
 
 
 def new_exploration(request, civilization_id):

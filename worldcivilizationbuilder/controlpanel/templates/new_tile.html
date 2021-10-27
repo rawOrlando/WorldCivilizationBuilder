@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<p>Create a new Tile:</p><br>
+<form method="post">
+  {% csrf_token %}
+  <label for="name">X: </label>
+  <input type="number" name="x">
+  <label for="name">Y: </label>
+  <input type="number" name="y">
+  <label for="name">Z: </label>
+  <input type="number" name="z">
+  <br> &nbsp;
+  <p>Assets:</p>
+  {% for asset in assets %}
+    &nbsp;&nbsp; <input type="checkbox" id="{{asset}}" name="{{asset}}" value="{{asset}}"> <label for="{{asset}}">{{asset}}</label>
+    <br>
+  {% endfor %}
+  <button type="submit" class="btn"> create</button>
+</form>
+{% endblock %}

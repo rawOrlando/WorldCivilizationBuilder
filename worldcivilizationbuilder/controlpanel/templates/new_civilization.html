@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<p>Create a new Civilization:</p><br>
+<form method="post">
+  {% csrf_token %}
+  <label for="name">Name: </label>
+  <input type="text" id="name" name="name"><br>
+  <br> &nbsp;
+  <button type="submit" class="btn"> continue</button>
+  <p>Capital:</p><br>
+  <label for="cap_name">Name: </label>
+  <input type="text" id="cap_name" name="cap_name"><br>
+  <label for="spot">Tile (1, 2, 3): </label>
+  <input type="number" name="spot">
+  <p>Land:</p><br>
+  <button onclick="location.href='{% url 'new_tile'%}'" type="button">New Tile</button>
+  <p>Spot 1:</p><br>
+  <!--  todo turn this to another loop  -->
+  {% for tile in tiles %}
+  <!--  tile  -->
+  &nbsp;&nbsp; <input type="radio" id="tile_{{tile.id}}" name="tile1" value="tile_{{tile.id}}"> <label for="tile_{{tile.id}}">{{tile.name}}</label>
+  <br>
+  {% endfor %}
+  <p>Spot 1:</p><br>
+  {% for tile in tiles %}
+  <!--  tile  -->
+  &nbsp;&nbsp; <input type="radio" id="tile_{{tile.id}}" name="tile2" value="tile_{{tile.id}}"> <label for="tile_{{tile.id}}">{{tile.name}}</label>
+  <br>
+  {% endfor %}
+  <p>Spot 1:</p><br>
+  {% for tile in tiles %}
+  <!--  tile  -->
+  &nbsp;&nbsp; <input type="radio" id="tile_{{tile.id}}" name="tile3" value="tile_{{tile.id}}"> <label for="tile_{{tile.id}}">{{tile.name}}</label>
+  <br>
+  {% endfor %}
+
+</form>
+{% endblock %}

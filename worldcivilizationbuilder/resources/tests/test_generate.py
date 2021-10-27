@@ -4,7 +4,7 @@ from db.disaster import Disaster, CurrentDisaster
 from db.map import Tile
 from db.technology import Technology, CivTec
 from resources import ResourceBundle
-from resources.assets import (
+from map.assets import (
     FOREST_NAME,
     TROPICAL_FOREST_NAME,
     RIVER_NAME,

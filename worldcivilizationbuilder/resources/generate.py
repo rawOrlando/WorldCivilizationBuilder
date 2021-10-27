@@ -6,7 +6,7 @@ from disasters.disaster import (
     durring_epidemic,
 )
 from resources import ResourceBundle
-from resources.assets import (
+from map.assets import (
     FOREST_NAME,
     TROPICAL_FOREST_NAME,
     RIVER_NAME,
@@ -22,13 +22,13 @@ calculate_distance_to_closest_settlement = 0
 
 def generate_resources(civilization):
     resource_bundle = ResourceBundle()
-    for tile in civilization.tiles.all():
+    for tile in civilization.territories():
         # I dont like how is changedbehind the scene
         resource_bundle = generate_resources_from_tile(
             civilization, tile, resource_bundle
         )
     # Generate through settlements
-    for settlement in civilization.settlements.all():
+    for settlement in civilization.settlements():
         resource_bundle = generate_resources_from_settlement(
             settlement, resource_bundle
         )

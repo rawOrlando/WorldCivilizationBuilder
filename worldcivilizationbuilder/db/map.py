@@ -96,10 +96,10 @@ class Tile(Base_DB_Model):
 
     def __str__(self):
         controler = self.controler
-        if controler is None:
+        if controler() is None:
             owner = "Unoccupied"
         else:
-            owner = controler.name
+            owner = controler().name
 
         return "{owner}: ({x}, {y}, {z})".format(
             owner=owner, x=self.x, y=self.y, z=self.z
