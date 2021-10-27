@@ -1,6 +1,6 @@
 from disasters.disaster import during_forest_fire
 from map.distance import calculate_distance_to_closest_settlement
-from resources.assets import FOREST_NAME, TROPICAL_FOREST_NAME
+from map.assets import FOREST_NAME, TROPICAL_FOREST_NAME
 
 
 def calculate_maintance_cost_for_tile(tile, settlement_locations=None, simple=False):

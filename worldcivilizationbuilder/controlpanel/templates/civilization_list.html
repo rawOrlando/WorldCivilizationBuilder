@@ -11,4 +11,6 @@
 {% else %}
     <p>No civilizations are available.</p>
 {% endif %}
+
+<button onclick="location.href='{% url 'new_civilization'%}'" type="button">create</button>
 {% endblock %}

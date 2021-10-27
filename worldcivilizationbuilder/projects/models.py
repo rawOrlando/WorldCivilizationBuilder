@@ -2,7 +2,7 @@ from django.db import models
 from controlpanel.models import Civilization, Settlement, Technology, Tile
 
 from controlpanel.population import migrate_initial_population_to_new_settlement
-from controlpanel.technology import unlock_another_technology
+from technology import unlock_another_technology
 
 import random
 
